@@ -1,25 +1,25 @@
 ﻿using System;
 using System.Text;
 
-namespace ImageProfiles.Model
+namespace ImageProfiles.Utility
 {
 	public class ImageMetadata
 	{
-		public int Id { get; set; }
+		public string Path { get; set; }
 		public string Name { get; set; }
-		public int HeightInPixel { get; set; }
-		public int WidthInPixel { get; set; }
+		public int? HeightInPixel { get; set; }
+		public int? WidthInPixel { get; set; }
 		public string CameraMake { get; set; }
 		public string CameraModel { get; set; }
 		public string CameraFirmwareVersion { get; set; }
 		public string LensModel { get; set; }
-		public DateTime DateTaken { get; set; }
-		public double FocalLength { get; set; }
-		public double FocalLengthFullFrameEquivalent { get; set; }
+		public DateTime? DateTaken { get; set; }
+		public double? FocalLength { get; set; }
+		public double? FocalLengthFullFrameEquivalent { get; set; }
 		public string ShutterSpeed { get; set; }
-		public double Aperture { get; set; }
-		public int Iso { get; set; }
-		public int ExposureBiasValue { get; set; }
+		public double? Aperture { get; set; }
+		public int? Iso { get; set; }
+		public string ExposureBiasValue { get; set; }
 		public bool IsChosen { get; set; }
 
 
@@ -36,6 +36,7 @@ namespace ImageProfiles.Model
 		public override string ToString()
 		{
 			var str = new StringBuilder();
+			str.Append($"Path: {Path}\r\n");
 			str.Append($"Name: {Name}\r\n");
 			str.Append($"HeightInPixel: {HeightInPixel}\r\n");
 			str.Append($"WidthInPixel: {WidthInPixel}\r\n");

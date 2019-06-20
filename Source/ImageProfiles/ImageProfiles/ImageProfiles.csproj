@@ -58,12 +58,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\ImageMetadata.cs" />
-    <Compile Include="Model\ImageMetadataContext.cs" />
+    <Compile Include="Database\DatabaseManager.cs" />
+    <Compile Include="Utility\ImageMetadata.cs" />
     <Compile Include="Utility\ImageProfileFactory.cs" />
-    <Compile Include="Utility\Impl\JpegProfile.cs" />
     <Compile Include="Utility\AbstractProfileBase.cs" />
     <Compile Include="Utility\Impl\JpgProfile.cs" />
+    <Compile Include="Utility\Impl\JPEGProfile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -71,6 +71,8 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Database\Script\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

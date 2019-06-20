@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using ImageProfiles.Model;
 
 namespace ImageProfiles.Utility
 {

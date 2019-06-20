@@ -13,18 +13,18 @@ namespace ImageProfiles.Utility
 
 			switch (extension)
 			{
-				case "jpg":
-				case "JPG":
+				case ".jpg":
+				case ".jpeg":
 					profile = new JpgProfile(file);
 					break;
-				case "jpeg":
-				case "JPEG":
-					profile = new JpegProfile(file);
+				case ".JPG":
+				case ".JPEG":
+					profile = new JPEGProfile(file);
 					break;
 				default:
 					throw new ApplicationException($"Unsupported file type ('{extension}')");
 			}
-
+			
 			return profile;
 		}
 	}
