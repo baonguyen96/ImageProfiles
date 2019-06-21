@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ImageProfiles.Representation;
+using ImageProfiles.Representation.Impl;
 using ImageProfiles.Utility;
 
 namespace ImageProfiles

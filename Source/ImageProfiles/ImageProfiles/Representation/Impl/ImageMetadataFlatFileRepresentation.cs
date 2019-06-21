@@ -1,7 +1,6 @@
-﻿using System;
-using ImageProfiles.Utility;
+﻿using ImageProfiles.Utility;
 
-namespace ImageProfiles.Representation
+namespace ImageProfiles.Representation.Impl
 {
 	internal class ImageMetadataFlatFileRepresentation : AbstractRepresentation
 	{

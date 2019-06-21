@@ -59,9 +59,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Representation\DatabaseManager.cs" />
-    <Compile Include="Representation\ImageMetadataConsoleRepresentation.cs" />
-    <Compile Include="Representation\ImageMetadataDatabaseRepresentation.cs" />
-    <Compile Include="Representation\ImageMetadataFlatFileRepresentation.cs" />
+    <Compile Include="Representation\Impl\ImageMetadataConsoleRepresentation.cs" />
+    <Compile Include="Representation\Impl\ImageMetadataDatabaseRepresentation.cs" />
+    <Compile Include="Representation\Impl\ImageMetadataFlatFileRepresentation.cs" />
     <Compile Include="Representation\AbstractRepresentation.cs" />
     <Compile Include="Utility\ImageMetadata.cs" />
     <Compile Include="Utility\ImageProfileFactory.cs" />
@@ -76,8 +76,6 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Representation\Script\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

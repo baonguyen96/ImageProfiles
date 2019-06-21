@@ -1,7 +1,7 @@
 ﻿using System;
 using ImageProfiles.Utility;
 
-namespace ImageProfiles.Representation
+namespace ImageProfiles.Representation.Impl
 {
 	internal class ImageMetadataDatabaseRepresentation : AbstractRepresentation
 	{

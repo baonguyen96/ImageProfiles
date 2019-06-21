@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using ImageProfiles.Utility;
 
-namespace ImageProfiles.Representation
+namespace ImageProfiles.Representation.Impl
 {
 	class ImageMetadataConsoleRepresentation : AbstractRepresentation
 	{
