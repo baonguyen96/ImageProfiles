@@ -8,30 +8,31 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF OBJECT_ID('[dbo].[Images]') IS NOT NULL 
-	DROP TABLE [dbo].[Images]
+IF OBJECT_ID('[dbo].[ImageMetadata]') IS NOT NULL 
+	DROP TABLE [dbo].[ImageMetadata]
 
-CREATE TABLE [dbo].[Images](
+CREATE TABLE [dbo].[ImageMetadata](
 	[ID] [BIGINT] IDENTITY(1,1) NOT NULL,
+	[Path] [NVARCHAR](256) NOT NULL,
 	[Name] [NVARCHAR](256) NOT NULL,
-	[DateTaken] [DATETIME2](7) NULL,
-	[WidthInPx] [INT] NULL,
-	[HeightInPx] [INT] NULL,
-	[CameraMaker] [NVARCHAR](256) NULL,
+	[HeightInPixel] [INT] NULL,
+	[WidthInPixel] [INT] NULL,
+	[CameraMake] [NVARCHAR](256) NULL,
 	[CameraModel] [NVARCHAR](256) NULL,
-	[FStop] [NVARCHAR](256) NULL,
+	[CameraFirmwareVersion] [NVARCHAR](256) NULL,
+	[LensModel] [NVARCHAR](256) NULL,
+	[DateTaken] [DATETIME2](7) NULL,
+	[FocalLength] [FLOAT] NULL,
 	[ShutterSpeed] [NVARCHAR](256) NULL,
-	[ISO] [NVARCHAR](256) NULL,
-	[ExposureCompensationStep] [NVARCHAR](256) NULL,
-	[FocalLength] [NVARCHAR](256) NULL,
-	[FlashMode] [NVARCHAR](256) NULL,
-	[ShootingMode] [NVARCHAR](256) NULL,
+	[Aperture] [FLOAT] NULL,
+	[ISO] [INT] NULL,
+	[ExposureBiasValue] [NVARCHAR](256) NULL,
+	[IsChosen] [BIT] NULL,
 	[CreatedOn] [DATETIME2](7) NULL,
 	[UpdatedOn] [DATETIME2](7) NULL
 ) ON [PRIMARY]
 GO
 
-GO
 
 
 
