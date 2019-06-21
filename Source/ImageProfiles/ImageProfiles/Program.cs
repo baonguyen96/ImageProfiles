@@ -49,7 +49,6 @@ namespace ImageProfiles
 		{
 			if (outputMode == OutputMode.Database)
 			{
-//				TraverseDirectoryAndPopulateDatabase(directory);
 				TraverseDirectoryAndPopulateData(directory, outputMode, null);
 			}
 			else if(outputMode == OutputMode.FlatFile)
@@ -62,13 +61,11 @@ namespace ImageProfiles
 					sw.WriteLine(ImageMetadataFlatFileRepresentation.GetHeader());
 				}
 
-				//				TraverseDirectoryAndPopulateFlatFile(directory, fileName);
 				TraverseDirectoryAndPopulateData(directory, outputMode, fileName);
 
 			}
 			else
 			{
-				//				TraverseDirectoryAndPopulateDatabase(directory);
 				TraverseDirectoryAndPopulateData(directory, outputMode, null);
 
 			}
@@ -114,81 +111,7 @@ namespace ImageProfiles
 				}
 			}
 		}
-
-
-		private static void TraverseDirectoryAndPopulateDatabase(DirectoryInfo directory)
-		{
-			if (directory.Name.Equals("raw", StringComparison.InvariantCultureIgnoreCase))
-			{
-				// skip
-			}
-			else if (directory.GetFiles().Any(file => !file.Name.Contains("Map")))
-			{
-				Console.WriteLine(directory.FullName);
-
-				var images = GetImageMetadataInDirectory(directory);
-				images.ForEach(image => DatabaseManager.Instance.ExecuteInsert(new ImageMetadataDatabaseRepresentation(image).GetRepresentation()));
-			}
-			else
-			{
-				foreach (var subDirectory in directory.GetDirectories())
-				{
-					TraverseDirectoryAndPopulateDatabase(subDirectory);
-				}
-			}
-		}
-
-
-		private static void TraverseDirectoryAndPopulateFlatFile(DirectoryInfo directory, string fileName)
-		{
-			if (directory.Name.Equals("raw", StringComparison.InvariantCultureIgnoreCase))
-			{
-				// skip
-			}
-			else if (directory.GetFiles().Any(file => !file.Name.Contains("Map")))
-			{
-				Console.WriteLine(directory.FullName);
-
-				var images = GetImageMetadataInDirectory(directory);
-
-				using (var sw = new StreamWriter(fileName, true))
-				{
-					images.ForEach(image => sw.WriteLine(new ImageMetadataFlatFileRepresentation(image).GetRepresentation()));
-				}
-			}
-			else
-			{
-				foreach (var subDirectory in directory.GetDirectories())
-				{
-					TraverseDirectoryAndPopulateFlatFile(subDirectory, fileName);
-				}
-			}
-		}
-
-
-		private static void TraverseDirectoryAndOutputConsole(DirectoryInfo directory)
-		{
-			if (directory.Name.Equals("raw", StringComparison.InvariantCultureIgnoreCase))
-			{
-				// skip
-			}
-			else if (directory.GetFiles().Any(file => !file.Name.Contains("Map")))
-			{
-				Console.WriteLine(directory.FullName);
-
-				var images = GetImageMetadataInDirectory(directory);
-				images.ForEach(image => DatabaseManager.Instance.ExecuteInsert(new ImageMetadataConsoleRepresentation(image).GetRepresentation()));
-			}
-			else
-			{
-				foreach (var subDirectory in directory.GetDirectories())
-				{
-					TraverseDirectoryAndPopulateDatabase(subDirectory);
-				}
-			}
-		}
-
-
+		
 
 		private static List<ImageMetadata> GetImageMetadataInDirectory(DirectoryInfo directory)
 		{
@@ -215,6 +138,7 @@ namespace ImageProfiles
 				foreach (var image in editedImages)
 				{
 					var im = imageMetadatas.FirstOrDefault(i =>
+						// ReSharper disable once PossibleNullReferenceException
 						Path.GetFileNameWithoutExtension(i.Name).Equals(Path.GetFileNameWithoutExtension(image.Name)));
 
 					if (im != null)
