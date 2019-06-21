@@ -4,7 +4,7 @@ using MetadataExtractor;
 
 namespace ImageProfiles.Utility.Impl
 {
-	class JPEGProfile : AbstractProfileBase
+	internal class JPEGProfile : AbstractProfileBase
 	{
 		public JPEGProfile(FileInfo file) : base(file)
 		{
@@ -88,12 +88,6 @@ namespace ImageProfiles.Utility.Impl
 								imageMetaData.FocalLength = string.IsNullOrEmpty(tag.Description)
 									? 0
 									: double.Parse(tag.Description.Replace(" mm", ""));
-							}
-							else if (tag.Name.Equals("Focal Length 35"))
-							{
-								imageMetaData.FocalLengthFullFrameEquivalent = string.IsNullOrEmpty(tag.Description)
-									? 0
-									: int.Parse(tag.Description.Replace(" mm", ""));
 							}
 							else if (tag.Name.Equals("Lens Model"))
 							{

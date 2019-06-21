@@ -58,7 +58,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Database\DatabaseManager.cs" />
+    <Compile Include="Representation\DatabaseManager.cs" />
+    <Compile Include="Representation\ImageMetadataConsoleRepresentation.cs" />
+    <Compile Include="Representation\ImageMetadataDatabaseRepresentation.cs" />
+    <Compile Include="Representation\ImageMetadataFlatFileRepresentation.cs" />
+    <Compile Include="Representation\AbstractRepresentation.cs" />
     <Compile Include="Utility\ImageMetadata.cs" />
     <Compile Include="Utility\ImageProfileFactory.cs" />
     <Compile Include="Utility\AbstractProfileBase.cs" />
@@ -66,13 +70,14 @@
     <Compile Include="Utility\Impl\JPEGProfile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\Impl\PngProfile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Database\Script\" />
+    <Folder Include="Representation\Script\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

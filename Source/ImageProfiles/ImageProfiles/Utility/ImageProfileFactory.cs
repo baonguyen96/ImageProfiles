@@ -4,7 +4,7 @@ using ImageProfiles.Utility.Impl;
 
 namespace ImageProfiles.Utility
 {
-	class ImageProfileFactory
+	internal class ImageProfileFactory
 	{
 		public static AbstractProfileBase GetProfile(FileInfo file)
 		{
@@ -21,8 +21,12 @@ namespace ImageProfiles.Utility
 				case ".JPEG":
 					profile = new JPEGProfile(file);
 					break;
+				case ".png":
+				case ".PNG":
+					profile = new PngProfile(file);
+					break;
 				default:
-					throw new ApplicationException($"Unsupported file type ('{extension}')");
+					throw new ApplicationException($"Unsupported file type '{extension}' for file '{file.FullName}'");
 			}
 			
 			return profile;
