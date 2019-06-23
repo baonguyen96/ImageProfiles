@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Text;
 
-namespace ImageProfiles.Utility
+namespace ImageProfiles.Profiles
 {
 	public class ImageMetadata
 	{

@@ -1,6 +1,6 @@
-﻿using ImageProfiles.Utility;
+﻿using ImageProfiles.Profiles;
 
-namespace ImageProfiles.Representation
+namespace ImageProfiles.Representations
 {
 	internal abstract class AbstractRepresentation
 	{

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using ImageProfiles.Utility.Impl;
+using ImageProfiles.Profiles.Impl;
 
-namespace ImageProfiles.Utility
+namespace ImageProfiles.Profiles
 {
 	internal class ImageProfileFactory
 	{

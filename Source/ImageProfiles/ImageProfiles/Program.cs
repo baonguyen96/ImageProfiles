@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ImageProfiles.Representation;
-using ImageProfiles.Representation.Impl;
-using ImageProfiles.Utility;
+using ImageProfiles.OutputAdapters;
+using ImageProfiles.Profiles;
+using ImageProfiles.Representations.Impl;
 
 namespace ImageProfiles
 {
@@ -26,8 +26,7 @@ namespace ImageProfiles
 			try
 			{
 				var root = new DirectoryInfo(@"G:\Pictures\Photography\Travel");
-				var outputMode = OutputMode.Database;
-				TraverseDirectoryAndPopulateData(root, outputMode);
+				TraverseDirectoryAndPopulateData(root, OutputMode.FlatFile);
 			}
 			catch (Exception e)
 			{
@@ -48,33 +47,6 @@ namespace ImageProfiles
 
 		private static void TraverseDirectoryAndPopulateData(DirectoryInfo directory, OutputMode outputMode)
 		{
-			if (outputMode == OutputMode.Database)
-			{
-				TraverseDirectoryAndPopulateData(directory, outputMode, null);
-			}
-			else if(outputMode == OutputMode.FlatFile)
-			{
-				Directory.CreateDirectory("./ImageReports");
-				var fileName = $"./ImageReports/ImageReport_{DateTime.Now.ToString("yyyyMMddhhmmss")}.csv";
-
-				using (var sw = new StreamWriter(fileName, true))
-				{
-					sw.WriteLine(ImageMetadataFlatFileRepresentation.GetHeader());
-				}
-
-				TraverseDirectoryAndPopulateData(directory, outputMode, fileName);
-
-			}
-			else
-			{
-				TraverseDirectoryAndPopulateData(directory, outputMode, null);
-
-			}
-		}
-
-
-		private static void TraverseDirectoryAndPopulateData(DirectoryInfo directory, OutputMode outputMode, string fileName)
-		{
 			if (directory.Name.Equals("raw", StringComparison.InvariantCultureIgnoreCase))
 			{
 				// skip
@@ -91,16 +63,14 @@ namespace ImageProfiles
 						images.ForEach(image => DatabaseManager.Instance.ExecuteInsert(new ImageMetadataDatabaseRepresentation(image).GetRepresentation()));
 						break;
 					case OutputMode.FlatFile:
-						using (var sw = new StreamWriter(fileName, true))
-						{
-							images.ForEach(image => sw.WriteLine(new ImageMetadataFlatFileRepresentation(image).GetRepresentation()));
-						}
+						FileManager.Instance.WriteLine(ImageMetadataFlatFileRepresentation.GetHeader());
+						images.ForEach(image => FileManager.Instance.WriteLine(new ImageMetadataFlatFileRepresentation(image).GetRepresentation()));
 						break;
 					case OutputMode.Console:
-						images.ForEach(image => DatabaseManager.Instance.ExecuteInsert(new ImageMetadataConsoleRepresentation(image).GetRepresentation()));
+						images.ForEach(image => Console.WriteLine(new ImageMetadataConsoleRepresentation(image).GetRepresentation()));
 						break;
 					default:
-						images.ForEach(image => DatabaseManager.Instance.ExecuteInsert(new ImageMetadataConsoleRepresentation(image).GetRepresentation()));
+						images.ForEach(image => Console.WriteLine(new ImageMetadataConsoleRepresentation(image).GetRepresentation()));
 						break;
 				}
 			}
@@ -108,10 +78,11 @@ namespace ImageProfiles
 			{
 				foreach (var subDirectory in directory.GetDirectories())
 				{
-					TraverseDirectoryAndPopulateData(subDirectory, outputMode, fileName);
+					TraverseDirectoryAndPopulateData(subDirectory, outputMode);
 				}
 			}
 		}
+
 		
 
 		private static List<ImageMetadata> GetImageMetadataInDirectory(DirectoryInfo directory)
@@ -122,8 +93,7 @@ namespace ImageProfiles
 			{
 				try
 				{
-					var profile = ImageProfileFactory.GetProfile(image);
-					return profile.GetMetadata();
+					return ImageProfileFactory.GetProfile(image).GetMetadata();
 				}
 				catch
 				{

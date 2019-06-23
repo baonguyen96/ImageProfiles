@@ -3,7 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading;
 
-namespace ImageProfiles.Representation
+namespace ImageProfiles.OutputAdapters
 {
 	public class DatabaseManager
 	{

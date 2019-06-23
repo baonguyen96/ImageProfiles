@@ -2,7 +2,7 @@
 using System.IO;
 using MetadataExtractor;
 
-namespace ImageProfiles.Utility.Impl
+namespace ImageProfiles.Profiles.Impl
 {
 	internal class PngProfile : AbstractProfileBase
 	{

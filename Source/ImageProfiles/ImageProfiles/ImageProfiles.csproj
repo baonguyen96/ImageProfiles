@@ -58,19 +58,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Representation\DatabaseManager.cs" />
-    <Compile Include="Representation\Impl\ImageMetadataConsoleRepresentation.cs" />
-    <Compile Include="Representation\Impl\ImageMetadataDatabaseRepresentation.cs" />
-    <Compile Include="Representation\Impl\ImageMetadataFlatFileRepresentation.cs" />
-    <Compile Include="Representation\AbstractRepresentation.cs" />
-    <Compile Include="Utility\ImageMetadata.cs" />
-    <Compile Include="Utility\ImageProfileFactory.cs" />
-    <Compile Include="Utility\AbstractProfileBase.cs" />
-    <Compile Include="Utility\Impl\JpgProfile.cs" />
-    <Compile Include="Utility\Impl\JPEGProfile.cs" />
+    <Compile Include="OutputAdapters\DatabaseManager.cs" />
+    <Compile Include="OutputAdapters\FileManager.cs" />
+    <Compile Include="Representations\Impl\ImageMetadataConsoleRepresentation.cs" />
+    <Compile Include="Representations\Impl\ImageMetadataDatabaseRepresentation.cs" />
+    <Compile Include="Representations\Impl\ImageMetadataFlatFileRepresentation.cs" />
+    <Compile Include="Representations\AbstractRepresentation.cs" />
+    <Compile Include="Profiles\ImageMetadata.cs" />
+    <Compile Include="Profiles\ImageProfileFactory.cs" />
+    <Compile Include="Profiles\AbstractProfileBase.cs" />
+    <Compile Include="Profiles\Impl\JpgProfile.cs" />
+    <Compile Include="Profiles\Impl\JPEGProfile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utility\Impl\PngProfile.cs" />
+    <Compile Include="Profiles\Impl\PngProfile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace ImageProfiles.Utility
+namespace ImageProfiles.Profiles
 {
 	public abstract class AbstractProfileBase
 	{
