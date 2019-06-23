@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
@@ -11,12 +12,31 @@ namespace ImageProfiles.OutputAdapters
 
 		public static FileManager Instance => Lazy.Value;
 
+		private bool _needToWriteHeader;
+
 		private readonly string _fileName;
 
+//		private List<string> Lines;
+		
 		private FileManager()
 		{
 			Directory.CreateDirectory("./ImageReports");
 			_fileName = $"./ImageReports/ImageReport_{DateTime.Now.ToString("yyyyMMddhhmmss")}.csv";
+			_needToWriteHeader = true;
+//			Lines = new List<string>();
+		}
+
+		public void WriteHeader(string header)
+		{
+			if (_needToWriteHeader)
+			{
+				using (var sw = new StreamWriter(_fileName, true))
+				{
+					sw.WriteLine(header);
+				}
+
+				_needToWriteHeader = false;
+			}
 		}
 
 		public void WriteLine(string line)

@@ -17,16 +17,16 @@ namespace ImageProfiles.Representations.Impl
 		{
 			return $"{Image.Path}|" +
 			       $"{Image.Name}|" +
-			       $"{Image.HeightInPixel}|" +
-			       $"{Image.WidthInPixel}|" +
+			       $"{Image.HeightInPixel ?? 0}|" +
+			       $"{Image.WidthInPixel ?? 0}|" +
 			       $"{Image.CameraMake}|" +
 			       $"{Image.CameraModel}|" +
 			       $"{Image.CameraFirmwareVersion}|" +
-			       $"{Image.LensModel}|" +
-			       $"{Image.DateTaken}|" +
-			       $"{Image.FocalLength}|" +
+			       $"{(Image.LensModel == null ? "" : Image.LensModel.Replace('|', ' '))}|" +
+			       $"{(Image.DateTaken == null ? "NULL" : Image.DateTaken.ToString())}|" +
+			       $"{Image.FocalLength ?? 0}|" +
 			       $"{Image.ShutterSpeed}|" +
-			       $"{Image.Aperture}|" +
+			       $"{Image.Aperture ?? 0}|" +
 			       $"{Image.Iso}|" +
 			       $"{Image.ExposureBiasValue}|" +
 			       $"{Image.IsChosen}";

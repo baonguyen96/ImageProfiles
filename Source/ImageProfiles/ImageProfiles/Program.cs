@@ -47,7 +47,8 @@ namespace ImageProfiles
 
 		private static void TraverseDirectoryAndPopulateData(DirectoryInfo directory, OutputMode outputMode)
 		{
-			if (directory.Name.Equals("raw", StringComparison.InvariantCultureIgnoreCase))
+			if (directory.Name.Equals("raw", StringComparison.InvariantCultureIgnoreCase) || 
+			    directory.Name.Equals("Edited", StringComparison.InvariantCultureIgnoreCase))
 			{
 				// skip
 			}
@@ -63,7 +64,7 @@ namespace ImageProfiles
 						images.ForEach(image => DatabaseManager.Instance.ExecuteInsert(new ImageMetadataDatabaseRepresentation(image).GetRepresentation()));
 						break;
 					case OutputMode.FlatFile:
-						FileManager.Instance.WriteLine(ImageMetadataFlatFileRepresentation.GetHeader());
+						FileManager.Instance.WriteHeader(ImageMetadataFlatFileRepresentation.GetHeader());
 						images.ForEach(image => FileManager.Instance.WriteLine(new ImageMetadataFlatFileRepresentation(image).GetRepresentation()));
 						break;
 					case OutputMode.Console:
