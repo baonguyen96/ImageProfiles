@@ -53,5 +53,10 @@ namespace ImageProfiles.Representations.Impl
 					'{DateTime.Now}'
 				);";
 		}
+
+		public static string GetResetQuery()
+		{
+			return "TRUNCATE TABLE [dbo].[ImageMetadata];";
+		}
 	}
 }

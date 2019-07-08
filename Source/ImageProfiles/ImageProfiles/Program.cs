@@ -26,7 +26,7 @@ namespace ImageProfiles
 			try
 			{
 				var root = new DirectoryInfo(@"G:\Pictures\Photography\Travel");
-				TraverseDirectoryAndPopulateData(root, OutputMode.FlatFile);
+				TraverseDirectoryAndPopulateData(root, OutputMode.Database);
 			}
 			catch (Exception e)
 			{
@@ -45,8 +45,22 @@ namespace ImageProfiles
 		}
 
 
-		private static void TraverseDirectoryAndPopulateData(DirectoryInfo directory, OutputMode outputMode)
+		private static void TraverseDirectoryAndPopulateData(DirectoryInfo directory, OutputMode outputMode, bool atRootLevel = true)
 		{
+			// initialize as needed
+			if (atRootLevel)
+			{
+				switch (outputMode)
+				{
+					case OutputMode.Database:
+						DatabaseManager.Instance.ExecuteInsertOrUpdate(ImageMetadataDatabaseRepresentation.GetResetQuery());
+						break;
+					case OutputMode.FlatFile:
+						FileManager.Instance.WriteHeader(ImageMetadataFlatFileRepresentation.GetHeader());
+						break;
+				}
+			}
+
 			if (directory.Name.Equals("raw", StringComparison.InvariantCultureIgnoreCase) || 
 			    directory.Name.Equals("Edited", StringComparison.InvariantCultureIgnoreCase))
 			{
@@ -57,29 +71,27 @@ namespace ImageProfiles
 				Console.WriteLine(directory.FullName);
 
 				var images = GetImageMetadataInDirectory(directory);
-
+				
 				switch (outputMode)
 				{
 					case OutputMode.Database:
-						images.ForEach(image => DatabaseManager.Instance.ExecuteInsert(new ImageMetadataDatabaseRepresentation(image).GetRepresentation()));
+						images.ForEach(image => DatabaseManager.Instance.ExecuteInsertOrUpdate(new ImageMetadataDatabaseRepresentation(image).GetRepresentation()));
 						break;
 					case OutputMode.FlatFile:
-						FileManager.Instance.WriteHeader(ImageMetadataFlatFileRepresentation.GetHeader());
 						images.ForEach(image => FileManager.Instance.WriteLine(new ImageMetadataFlatFileRepresentation(image).GetRepresentation()));
 						break;
 					case OutputMode.Console:
 						images.ForEach(image => Console.WriteLine(new ImageMetadataConsoleRepresentation(image).GetRepresentation()));
 						break;
 					default:
-						images.ForEach(image => Console.WriteLine(new ImageMetadataConsoleRepresentation(image).GetRepresentation()));
-						break;
+						throw new ArgumentOutOfRangeException(nameof(outputMode), outputMode, null);
 				}
 			}
 			else
 			{
 				foreach (var subDirectory in directory.GetDirectories())
 				{
-					TraverseDirectoryAndPopulateData(subDirectory, outputMode);
+					TraverseDirectoryAndPopulateData(directory: subDirectory, outputMode: outputMode, atRootLevel: false);
 				}
 			}
 		}

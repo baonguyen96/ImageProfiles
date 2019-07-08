@@ -33,21 +33,11 @@ namespace ImageProfiles.OutputAdapters
 					sqlDataAdapter.Fill(table);
 				}
 			}
-
+			
 			return table;
 		}
-
-		public int ExecuteInsert(string query)
-		{
-			return ExecuteInsertOrUpdate(query);
-		}
-
-		public int ExecuteUpdate(string query)
-		{
-			return ExecuteInsertOrUpdate(query);
-		}
-
-		private int ExecuteInsertOrUpdate(string query)
+		
+		public int ExecuteInsertOrUpdate(string query)
 		{
 			int rowsAffected;
 			using (var connection = new SqlConnection(_connectionString))
