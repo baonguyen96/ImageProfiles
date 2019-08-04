@@ -1,15 +1,61 @@
+
+------------------------------------
+-- Reset
+------------------------------------
+TRUNCATE TABLE [dbo].[ImageMetaData]
+
+
 ------------------------------------
 -- View
 ------------------------------------
 
 SELECT * 
-FROM [dbo].[ImageMetaData]
-WHERE [FocalLength] = 20
-	AND [IsChosen] = 1
+FROM [dbo].[ImageMetaData] WITH(NOLOCK)
+WHERE [Name] LIKE '%.jpg'
+ORDER BY [DateTaken] DESC
+
+
+------------------------------------
+-- Most used camera
+------------------------------------
+
+SELECT CONCAT([CameraMake], ' - ', [CameraModel]) AS [Camera], COUNT(1) AS [TotalPictureTaken]
+FROM [dbo].[ImageMetaData] WITH(NOLOCK)
+WHERE COALESCE([CameraMake], '') <> ''
+GROUP BY CONCAT([CameraMake], ' - ', [CameraModel])
+ORDER BY [TotalPictureTaken] DESC
+
+
+------------------------------------
+-- Most used lens
+------------------------------------
+
+SELECT 
+	[LensModel], 
+	COUNT(1) AS [Total],
+	SUM(CAST([IsChosen] AS INT)) AS [TotalChosen], 
+	SUM(CAST([IsChosen] AS FLOAT)) / CAST(COUNT(1) AS FLOAT) AS [ChosenPercentage]
+FROM [dbo].[ImageMetadata] WITH(NOLOCK)
+WHERE COALESCE(NULLIF([LensModel], ''), '----') <> '----'
+GROUP BY [LensModel]
+ORDER BY [TotalChosen] DESC
+
+
 
 ------------------------------------
 -- Most used focal length
 ------------------------------------
+
+SELECT DISTINCT [FocalLength]
+FROM [dbo].[ImageMetadata] WITH(NOLOCK)
+ORDER BY [FocalLength]
+
+
+SELECT *
+FROM [dbo].[ImageMetadata] WITH(NOLOCK)
+WHERE [FocalLength] < 10
+ORDER BY [FocalLength] 
+
 
 SELECT 
 	[FocalLength], 
@@ -28,7 +74,7 @@ HAVING SUM(CAST([IsChosen] AS INT)) >
 	FROM [dbo].[ImageMetadata] WITH(NOLOCK)
 	WHERE [FocalLength] > 0
 )
-ORDER BY [ChosenPercentage] DESC
+ORDER BY [TotalChosen] DESC
 
 
 
@@ -41,13 +87,14 @@ ORDER BY [ChosenPercentage] DESC
 (
 	SELECT
 		CASE
-			WHEN [FocalLength] <= 18.0 THEN 'Ultrawide'
-			WHEN [FocalLength] <= 28.0 THEN 'Wide'
-			WHEN [FocalLength] <= 50.0 THEN 'Standard'
-			ELSE 'Tele' 
+			WHEN [FocalLength] <= 18.0 THEN 'Ultrawide [0mm, 18mm]'
+			WHEN [FocalLength] <= 28.0 THEN 'Wide [19mm, 28mm]'
+			WHEN [FocalLength] <= 50.0 THEN 'Standard [29mm, 50mm]'
+			ELSE 'Tele [51mm, infinity)' 
 		END AS Category,
 		CAST([IsChosen] AS FLOAT) AS [IsChosen]
 	FROM [dbo].[ImageMetadata] WITH(NOLOCK)
+	WHERE [FocalLength] >= 10 -- widest lens was Canon 10-18 so below are invalid or manual lenses 
 )
 SELECT 
 	[Category], 
@@ -74,6 +121,11 @@ ORDER BY [Total] DESC
 
 
 ------------------------------------
--- Reset
+-- Other research
 ------------------------------------
-TRUNCATE TABLE [dbo].[ImageMetaData]
+
+-- Find all distinct file type case sensitive
+SELECT DISTINCT TOP 100 RIGHT([Name], 4) COLLATE SQL_Latin1_General_CP1_CS_AS
+FROM [dbo].[ImageMetadata] WIHT(NOLOCK)
+
+
