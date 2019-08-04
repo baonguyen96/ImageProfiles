@@ -11,7 +11,7 @@ TRUNCATE TABLE [dbo].[ImageMetaData]
 
 SELECT * 
 FROM [dbo].[ImageMetaData] WITH(NOLOCK)
-WHERE [Name] LIKE '%.jpg'
+WHERE CONCAT([CameraMake], ' - ', [CameraModel]) = ' - '
 ORDER BY [DateTaken] DESC
 
 
@@ -21,7 +21,7 @@ ORDER BY [DateTaken] DESC
 
 SELECT CONCAT([CameraMake], ' - ', [CameraModel]) AS [Camera], COUNT(1) AS [TotalPictureTaken]
 FROM [dbo].[ImageMetaData] WITH(NOLOCK)
-WHERE COALESCE([CameraMake], '') <> ''
+--WHERE COALESCE([CameraMake], '') <> ''
 GROUP BY CONCAT([CameraMake], ' - ', [CameraModel])
 ORDER BY [TotalPictureTaken] DESC
 
@@ -124,8 +124,33 @@ ORDER BY [Total] DESC
 -- Other research
 ------------------------------------
 
+
 -- Find all distinct file type case sensitive
-SELECT DISTINCT TOP 100 RIGHT([Name], 4) COLLATE SQL_Latin1_General_CP1_CS_AS
+SELECT DISTINCT TOP 100 RIGHT([Name], 4) COLLATE SQL_Latin1_General_CP1_CS_AS AS FileExtension
 FROM [dbo].[ImageMetadata] WIHT(NOLOCK)
+
+
+-- PNG population is so small so can be skipped for now
+SELECT TOP 100 *
+FROM [dbo].[ImageMetadata] WIHT(NOLOCK)
+WHERE [Name] LIKE '%.JPG'
+
+
+-- Find examples of each type
+; WITH #FileExtensions AS 
+(
+	SELECT 
+		[Id], 
+		RIGHT([Name], 4) COLLATE SQL_Latin1_General_CP1_CS_AS AS FileExtension,
+		ROW_NUMBER() OVER (PARTITION BY RIGHT([Name], 4) COLLATE SQL_Latin1_General_CP1_CS_AS ORDER BY [DateTaken] DESC) AS Ranker
+	FROM [dbo].[ImageMetadata] WIHT(NOLOCK)
+)
+SELECT im.*
+FROM [dbo].[ImageMetadata] im WITH(NOLOCK)
+INNER JOIN #FileExtensions fe 
+	ON im.ID = fe.ID
+WHERE fe.Ranker < 10
+ORDER BY [fe].[FileExtension], [fe].[Ranker]
+
 
 

@@ -4,9 +4,9 @@ using MetadataExtractor;
 
 namespace ImageProfiles.Profiles.Impl
 {
-	internal class JPEGProfile : AbstractProfileBase
+	internal class JpegProfile : AbstractProfileBase
 	{
-		public JPEGProfile(FileInfo file) : base(file)
+		public JpegProfile(FileInfo file) : base(file)
 		{
 		}
 

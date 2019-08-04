@@ -25,13 +25,20 @@ namespace ImageProfiles.Profiles.Impl
 				{
 					foreach (var tag in directory.Tags)
 					{
+						Console.WriteLine($"{directory.Name} - {tag.Name} - {tag.Description}");
+
 						if (directory.Name.Equals("XMP"))
 						{
 							if (tag.Name.Equals("Create Date"))
 							{
+								if (tag.Description == null) continue;
 								var date = tag.Description.Split('T')[0];
 								var time = tag.Description.Split('T')[1];
 								imageMetaData.DateTaken = DateTime.Parse($"{date.Replace('-', '/')} {time}");
+							}
+							else if (tag.Name.Equals("Lens"))
+							{
+								imageMetaData.LensModel = tag.Description;
 							}
 						}
 						else if (directory.Name.Equals("Exif SubIFD"))

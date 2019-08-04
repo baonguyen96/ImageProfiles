@@ -19,7 +19,7 @@ namespace ImageProfiles.Profiles
 					break;
 				case ".JPG":
 				case ".JPEG":
-					profile = new JPEGProfile(file);
+					profile = new JpegProfile(file);
 					break;
 				case ".png":
 				case ".PNG":

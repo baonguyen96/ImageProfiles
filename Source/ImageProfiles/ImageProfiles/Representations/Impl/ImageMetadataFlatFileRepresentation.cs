@@ -10,7 +10,21 @@ namespace ImageProfiles.Representations.Impl
 		
 		public static string GetHeader()
 		{
-			return "Path|Name|HeightInPixel|WidthInPixel|CameraMake|CameraModel|CameraFirmwareVersion|LensModel|DateTaken|FocalLength|ShutterSpeed|Aperture|Iso|ExposureBiasValue|IsChosen";
+			return "Path|" +
+			       "Name|" +
+			       "HeightInPixel|" +
+			       "WidthInPixel|" +
+			       "CameraMake|" +
+			       "CameraModel|" +
+			       "CameraFirmwareVersion|" +
+			       "LensModel|" +
+			       "DateTaken|" +
+			       "FocalLength|" +
+			       "ShutterSpeed|" +
+			       "Aperture|" +
+			       "Iso|" +
+			       "ExposureBiasValue|" +
+			       "IsChosen";
 		}
 
 		public override string GetRepresentation()

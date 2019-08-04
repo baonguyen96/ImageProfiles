@@ -30,17 +30,17 @@ namespace ImageProfiles
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine($"{e.Message}\r\n" +
-				                  $"{e.StackTrace}");
+				Console.WriteLine(e.Message);
+				Console.WriteLine(e.StackTrace);
 			}
 			finally
 			{
 				var end = DateTime.Now;
-				var duration = (end - start).TotalSeconds;
+				var duration = end - start;
 
 				Console.WriteLine();
 				Console.WriteLine($"End:      {end}");
-				Console.WriteLine($"Run time: {duration} second(s)");
+				Console.WriteLine($"Run time: {duration.Hours:D2}:{duration.Minutes:D2}:{duration.Seconds:D2}");
 			}
 		}
 
@@ -62,7 +62,7 @@ namespace ImageProfiles
 			}
 
 			if (directory.Name.Equals("raw", StringComparison.InvariantCultureIgnoreCase) || 
-			    directory.Name.Equals("Edited", StringComparison.InvariantCultureIgnoreCase))
+			    directory.Name.ToLower().Contains("edit"))
 			{
 				// skip
 			}
@@ -100,7 +100,7 @@ namespace ImageProfiles
 
 		private static List<ImageMetadata> GetImageMetadataInDirectory(DirectoryInfo directory)
 		{
-			var editedDirectory = new DirectoryInfo(Path.Combine(directory.FullName, "Edited"));
+			var editedDirectory = directory.GetDirectories("*Edited*").FirstOrDefault();
 			var allImages = directory.GetFiles();
 			var imageMetadatas = allImages.Select(image =>
 			{
@@ -116,7 +116,7 @@ namespace ImageProfiles
 
 			imageMetadatas = imageMetadatas.Where(im => im != null).ToList();
 
-			if (editedDirectory.Exists)
+			if (editedDirectory != null && editedDirectory.Exists)
 			{
 				var editedImages = editedDirectory.GetFiles();
 				foreach (var image in editedImages)
