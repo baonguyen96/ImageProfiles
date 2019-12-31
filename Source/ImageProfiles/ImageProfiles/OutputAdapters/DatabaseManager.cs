@@ -17,7 +17,7 @@ namespace ImageProfiles.OutputAdapters
 
 		private DatabaseManager()
 		{
-			Server = @"(LocalDb)\LocalDBDemo";
+			Server = @"localhost\SQLEXPRESS";
 			Database = "DemoDB";
 			_connectionString = $"Data Source={Server};Initial Catalog={Database};Integrated Security=true;";
 		}
