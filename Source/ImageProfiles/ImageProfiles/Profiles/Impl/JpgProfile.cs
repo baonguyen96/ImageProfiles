@@ -25,8 +25,6 @@ namespace ImageProfiles.Profiles.Impl
 				{
 					foreach (var tag in directory.Tags)
 					{
-						Console.WriteLine($"{directory.Name} - {tag.Name} - {tag.Description}");
-
 						if (directory.Name.Equals("XMP"))
 						{
 							if (tag.Name.Equals("Create Date"))
@@ -62,6 +60,8 @@ namespace ImageProfiles.Profiles.Impl
 						}
 					}
 				}
+
+				imageMetaData = UpdateImageMetadataForManualLens(imageMetaData);
 			}
 			catch (Exception e)
 			{

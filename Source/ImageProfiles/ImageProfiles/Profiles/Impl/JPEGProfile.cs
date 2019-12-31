@@ -96,6 +96,8 @@ namespace ImageProfiles.Profiles.Impl
 						}
 					}
 				}
+
+				imageMetaData = UpdateImageMetadataForManualLens(imageMetaData);
 			}
 			catch (Exception e)
 			{
