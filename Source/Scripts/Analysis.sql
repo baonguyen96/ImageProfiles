@@ -11,7 +11,8 @@ TRUNCATE TABLE [dbo].[ImageMetaData]
 
 SELECT * 
 FROM [dbo].[ImageMetaData] WITH(NOLOCK)
-WHERE CONCAT([CameraMake], ' - ', [CameraModel]) = ' - '
+WHERE [LensModel] = 'Rokinon 12mm f/2.0 NSC CS'
+--WHERE CONCAT([CameraMake], ' - ', [CameraModel]) = ' - '
 ORDER BY [DateTaken] DESC
 
 
@@ -37,6 +38,7 @@ SELECT
 	SUM(CAST([IsChosen] AS FLOAT)) / CAST(COUNT(1) AS FLOAT) AS [ChosenPercentage]
 FROM [dbo].[ImageMetadata] WITH(NOLOCK)
 WHERE COALESCE(NULLIF([LensModel], ''), '----') <> '----'
+	OR [Path] NOT LIKE '%Test%'
 GROUP BY [LensModel]
 ORDER BY [TotalChosen] DESC
 
