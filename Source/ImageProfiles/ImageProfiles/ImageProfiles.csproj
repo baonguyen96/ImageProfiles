@@ -61,8 +61,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OutputAdapters\DatabaseManager.cs" />
-    <Compile Include="OutputAdapters\FileManager.cs" />
     <Compile Include="Representations\Impl\ImageMetadataConsoleRepresentation.cs" />
     <Compile Include="Representations\Impl\ImageMetadataDatabaseRepresentation.cs" />
     <Compile Include="Representations\Impl\ImageMetadataFlatFileRepresentation.cs" />
@@ -75,6 +73,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Profiles\Impl\PngProfile.cs" />
+    <Compile Include="Representations\RepresentationFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

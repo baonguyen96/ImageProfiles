@@ -4,13 +4,13 @@ namespace ImageProfiles.Representations
 {
 	internal abstract class AbstractRepresentation
 	{
-		protected ImageMetadata Image;
+		protected bool IsInitialLoad;
 
-		protected AbstractRepresentation(ImageMetadata imageMetadata)
+		protected AbstractRepresentation()
 		{
-			Image = imageMetadata;
+			IsInitialLoad = true;
 		}
 
-		public abstract string GetRepresentation();
+		public abstract void Save(ImageMetadata imageMetadata);
 	}
 }

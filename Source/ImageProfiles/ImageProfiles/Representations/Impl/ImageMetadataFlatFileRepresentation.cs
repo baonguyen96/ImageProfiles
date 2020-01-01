@@ -1,14 +1,19 @@
-﻿using ImageProfiles.Profiles;
+﻿using System;
+using System.IO;
+using ImageProfiles.Profiles;
 
 namespace ImageProfiles.Representations.Impl
 {
 	internal class ImageMetadataFlatFileRepresentation : AbstractRepresentation
 	{
-		public ImageMetadataFlatFileRepresentation(ImageMetadata imageMetadata) : base(imageMetadata)
+		private readonly string _fileName;
+
+		public ImageMetadataFlatFileRepresentation(string fileName) : base()
 		{
+			_fileName = fileName;
 		}
 		
-		public static string GetHeader()
+		private string GetHeader()
 		{
 			return "Path|" +
 			       "Name|" +
@@ -27,23 +32,43 @@ namespace ImageProfiles.Representations.Impl
 			       "IsChosen";
 		}
 
-		public override string GetRepresentation()
+		public static string GetString(ImageMetadata image)
 		{
-			return $"{Image.Path}|" +
-			       $"{Image.Name}|" +
-			       $"{Image.HeightInPixel ?? 0}|" +
-			       $"{Image.WidthInPixel ?? 0}|" +
-			       $"{Image.CameraMake}|" +
-			       $"{Image.CameraModel}|" +
-			       $"{Image.CameraFirmwareVersion}|" +
-			       $"{(Image.LensModel == null ? "" : Image.LensModel.Replace('|', ' '))}|" +
-			       $"{(Image.DateTaken == null ? "NULL" : Image.DateTaken.ToString())}|" +
-			       $"{Image.FocalLength ?? 0}|" +
-			       $"{Image.ShutterSpeed}|" +
-			       $"{Image.Aperture ?? 0}|" +
-			       $"{Image.Iso}|" +
-			       $"{Image.ExposureBiasValue}|" +
-			       $"{Image.IsChosen}";
+			return $"{image.Path}|" +
+			       $"{image.Name}|" +
+			       $"{image.HeightInPixel ?? 0}|" +
+			       $"{image.WidthInPixel ?? 0}|" +
+			       $"{image.CameraMake}|" +
+			       $"{image.CameraModel}|" +
+			       $"{image.CameraFirmwareVersion}|" +
+			       $"{(image.LensModel == null ? "" : image.LensModel.Replace('|', ' '))}|" +
+			       $"{(image.DateTaken == null ? "NULL" : image.DateTaken.ToString())}|" +
+			       $"{image.FocalLength ?? 0}|" +
+			       $"{image.ShutterSpeed}|" +
+			       $"{image.Aperture ?? 0}|" +
+			       $"{image.Iso}|" +
+			       $"{image.ExposureBiasValue}|" +
+			       $"{image.IsChosen}";
+		}
+
+		public override void Save(ImageMetadata image)
+		{
+			string line;
+
+			if (IsInitialLoad)
+			{
+				line = GetHeader();
+				IsInitialLoad = false;
+			}
+			else
+			{
+				line = GetString(image);
+			}
+
+			using (var sw = new StreamWriter(_fileName, true))
+			{
+				sw.WriteLine(line);
+			}
 		}
 	}
 }

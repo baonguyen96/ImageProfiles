@@ -2,21 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ImageProfiles.OutputAdapters;
 using ImageProfiles.Profiles;
+using ImageProfiles.Representations;
 using ImageProfiles.Representations.Impl;
 
 namespace ImageProfiles
 {
 	internal class Program
 	{
-		private enum OutputMode
-		{
-			Database,
-			FlatFile,
-			Console
-		}
-
 		private static void Main(string[] args)
 		{
 			var start = DateTime.Now;
@@ -25,8 +18,9 @@ namespace ImageProfiles
 
 			try
 			{
-				var root = new DirectoryInfo(@"G:\Pictures\Photography\Travel");
-				TraverseDirectoryAndPopulateData(root, OutputMode.Database);
+				var root = new DirectoryInfo(@"D:\Bao\Pictures\Photography\Travel");
+				var mode = RepresentationFactory.RepresentationMode.Database;
+				Process(root, mode);
 			}
 			catch (Exception e)
 			{
@@ -44,65 +38,41 @@ namespace ImageProfiles
 			}
 		}
 
-
-		private static void TraverseDirectoryAndPopulateData(DirectoryInfo directory, OutputMode outputMode, bool atRootLevel = true)
+		public static void Process(DirectoryInfo root, RepresentationFactory.RepresentationMode mode)
 		{
-			// initialize as needed
-			if (atRootLevel)
-			{
-				switch (outputMode)
-				{
-					case OutputMode.Database:
-						DatabaseManager.Instance.ExecuteInsertOrUpdate(ImageMetadataDatabaseRepresentation.GetResetQuery());
-						break;
-					case OutputMode.FlatFile:
-						FileManager.Instance.WriteHeader(ImageMetadataFlatFileRepresentation.GetHeader());
-						break;
-				}
-			}
+			var directories = GetOriginalDirectories(root);
+			var size = directories.Count;
+			var maxLength = size.ToString().Length;
+			var representation = RepresentationFactory.GetRepresentation(mode);
 
-			if (directory.Name.Equals("raw", StringComparison.InvariantCultureIgnoreCase) || 
-			    directory.Name.ToLower().Contains("edit"))
+			for (var i = 0; i < directories.Count; i++)
 			{
-				// skip
-			}
-			else if (directory.GetFiles().Any(file => !file.Name.Contains("Map")))
-			{
-				Console.WriteLine(directory.FullName);
-
+				var directory = directories[i];
+				Console.WriteLine($"[{i.ToString($"D{maxLength}")} / {size.ToString($"D{maxLength}")}]: {directory.FullName}");
 				var images = GetImageMetadataInDirectory(directory);
-				
-				switch (outputMode)
+
+				foreach (var image in images)
 				{
-					case OutputMode.Database:
-						images.ForEach(image => DatabaseManager.Instance.ExecuteInsertOrUpdate(new ImageMetadataDatabaseRepresentation(image).GetRepresentation()));
-						break;
-					case OutputMode.FlatFile:
-						images.ForEach(image => FileManager.Instance.WriteLine(new ImageMetadataFlatFileRepresentation(image).GetRepresentation()));
-						break;
-					case OutputMode.Console:
-						images.ForEach(image => Console.WriteLine(new ImageMetadataConsoleRepresentation(image).GetRepresentation()));
-						break;
-					default:
-						throw new ArgumentOutOfRangeException(nameof(outputMode), outputMode, null);
-				}
-			}
-			else
-			{
-				foreach (var subDirectory in directory.GetDirectories())
-				{
-					TraverseDirectoryAndPopulateData(directory: subDirectory, outputMode: outputMode, atRootLevel: false);
+					representation.Save(image);
 				}
 			}
 		}
 
-		
+		private static List<DirectoryInfo> GetOriginalDirectories(DirectoryInfo root)
+		{
+			var directories = root.GetDirectories("*", SearchOption.AllDirectories)
+				.Where(dir => !dir.Name.StartsWith("raw", StringComparison.InvariantCultureIgnoreCase))
+				.Where(dir => !dir.Name.StartsWith("edit", StringComparison.InvariantCultureIgnoreCase))
+				.Where(dir => dir.GetFiles().Any(file => !file.Name.Contains("Map")))
+				.ToList();
+			return directories;
+		}
 
 		private static List<ImageMetadata> GetImageMetadataInDirectory(DirectoryInfo directory)
 		{
 			var editedDirectory = directory.GetDirectories("*Edited*").FirstOrDefault();
 			var allImages = directory.GetFiles();
-			var imageMetadatas = allImages.Select(image =>
+			var images = allImages.Select(image =>
 			{
 				try
 				{
@@ -114,14 +84,14 @@ namespace ImageProfiles
 				}
 			}).ToList();
 
-			imageMetadatas = imageMetadatas.Where(im => im != null).ToList();
+			images = images.Where(im => im != null).ToList();
 
 			if (editedDirectory != null && editedDirectory.Exists)
 			{
 				var editedImages = editedDirectory.GetFiles();
 				foreach (var image in editedImages)
 				{
-					var im = imageMetadatas.FirstOrDefault(i =>
+					var im = images.FirstOrDefault(i =>
 						// ReSharper disable once PossibleNullReferenceException
 						Path.GetFileNameWithoutExtension(i.Name).Equals(Path.GetFileNameWithoutExtension(image.Name)));
 
@@ -132,7 +102,7 @@ namespace ImageProfiles
 				}
 			}
 
-			return imageMetadatas;
+			return images;
 		}
 	}
 }

@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Data.SqlClient;
 using ImageProfiles.Profiles;
 
 namespace ImageProfiles.Representations.Impl
 {
 	internal class ImageMetadataDatabaseRepresentation : AbstractRepresentation
 	{
-		public ImageMetadataDatabaseRepresentation(ImageMetadata imageMetadata) : base(imageMetadata)
+		private readonly string _connectionString;
+
+		public ImageMetadataDatabaseRepresentation(string server, string database) : base()
 		{
+			_connectionString = $"Data Source={server};Initial Catalog={database};Integrated Security=true;";
 		}
 		
-		public override string GetRepresentation()
+		private static string GetInsertQuery(ImageMetadata image)
 		{
 			return $@"
 				INSERT INTO [dbo].[ImageMetadata]
@@ -34,29 +38,53 @@ namespace ImageProfiles.Representations.Impl
 				)
 				VALUES
 				(
-					'{Image.Path}',
-					'{Image.Name}',
-					{Image.HeightInPixel ?? 0},
-					{Image.WidthInPixel ?? 0},
-					'{Image.CameraMake}',
-					'{Image.CameraModel}',
-					'{Image.CameraFirmwareVersion}',
-					'{Image.LensModel}',
-					'{Image.DateTaken}',
-					'{Image.FocalLength}',
-					'{Image.ShutterSpeed}',
-					{Image.Aperture ?? 0},
-					{Image.Iso ?? 0},
-					'{Image.ExposureBiasValue}',
-					{(Image.IsChosen ? "1" : "0")},
+					'{image.Path}',
+					'{image.Name}',
+					{image.HeightInPixel ?? 0},
+					{image.WidthInPixel ?? 0},
+					'{image.CameraMake}',
+					'{image.CameraModel}',
+					'{image.CameraFirmwareVersion}',
+					'{image.LensModel}',
+					'{image.DateTaken}',
+					'{image.FocalLength}',
+					'{image.ShutterSpeed}',
+					{image.Aperture ?? 0},
+					{image.Iso ?? 0},
+					'{image.ExposureBiasValue}',
+					{(image.IsChosen ? "1" : "0")},
 					'{DateTime.Now}',
 					'{DateTime.Now}'
 				);";
 		}
 
-		public static string GetResetQuery()
+		private static string GetResetQuery()
 		{
 			return "TRUNCATE TABLE [dbo].[ImageMetadata];";
+		}
+
+		public override void Save(ImageMetadata image)
+		{
+			string query;
+
+			if (IsInitialLoad)
+			{
+				query = GetResetQuery();
+				IsInitialLoad = false;
+			}
+			else
+			{
+				query = GetInsertQuery(image);
+			}
+
+			using (var connection = new SqlConnection(_connectionString))
+			{
+				connection.Open();
+				using (var sqlCommand = new SqlCommand(query, connection))
+				{
+					sqlCommand.ExecuteNonQuery();
+				}
+			}
 		}
 	}
 }
