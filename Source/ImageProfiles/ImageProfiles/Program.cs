@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using ImageProfiles.Profiles;
 using ImageProfiles.Representations;
-using ImageProfiles.Representations.Impl;
 
 namespace ImageProfiles
 {
@@ -41,20 +41,23 @@ namespace ImageProfiles
 		public static void Process(DirectoryInfo root, RepresentationFactory.RepresentationMode mode)
 		{
 			var directories = GetOriginalDirectories(root);
-			var size = directories.Count;
-			var maxLength = size.ToString().Length;
+			var maxLength = directories.Count.ToString().Length;
 			var representation = RepresentationFactory.GetRepresentation(mode);
+			var directoryCount = 0;
+			var size = directories.Count;
 
-			for (var i = 0; i < directories.Count; i++)
+			foreach (var directory in directories)
 			{
-				var directory = directories[i];
-				Console.WriteLine($"[{i.ToString($"D{maxLength}")} / {size.ToString($"D{maxLength}")}]: {directory.FullName}");
+				Console.WriteLine($"[{directoryCount.ToString($"D{maxLength}")} / {size.ToString($"D{maxLength}")}]: {directory.FullName}");
+			
 				var images = GetImageMetadataInDirectory(directory);
 
 				foreach (var image in images)
 				{
 					representation.Save(image);
 				}
+
+				directoryCount++;
 			}
 		}
 
@@ -89,6 +92,7 @@ namespace ImageProfiles
 			if (editedDirectory != null && editedDirectory.Exists)
 			{
 				var editedImages = editedDirectory.GetFiles();
+
 				foreach (var image in editedImages)
 				{
 					var im = images.FirstOrDefault(i =>

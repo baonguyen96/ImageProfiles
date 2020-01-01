@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using ImageProfiles.Profiles;
 using ImageProfiles.Representations.Impl;
 
 namespace ImageProfiles.Representations

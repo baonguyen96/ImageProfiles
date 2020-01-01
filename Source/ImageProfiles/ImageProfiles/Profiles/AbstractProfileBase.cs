@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.Entity.Core.Objects;
 using System.IO;
 
 namespace ImageProfiles.Profiles
