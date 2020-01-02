@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using ImageProfiles.Profiles;
 using ImageProfiles.Representations;
 
@@ -20,7 +19,7 @@ namespace ImageProfiles
 			{
 				var root = new DirectoryInfo(@"D:\Bao\Pictures\Photography\Travel");
 				var mode = RepresentationFactory.RepresentationMode.Database;
-				Process(root, mode);
+				ProcessAll(root, mode);
 			}
 			catch (Exception e)
 			{
@@ -38,7 +37,7 @@ namespace ImageProfiles
 			}
 		}
 
-		public static void Process(DirectoryInfo root, RepresentationFactory.RepresentationMode mode)
+		public static void ProcessAll(DirectoryInfo root, RepresentationFactory.RepresentationMode mode)
 		{
 			var directories = GetOriginalDirectories(root);
 			var maxLength = directories.Count.ToString().Length;
@@ -61,7 +60,7 @@ namespace ImageProfiles
 			}
 		}
 
-		private static List<DirectoryInfo> GetOriginalDirectories(DirectoryInfo root)
+		public static List<DirectoryInfo> GetOriginalDirectories(DirectoryInfo root)
 		{
 			var directories = root.GetDirectories("*", SearchOption.AllDirectories)
 				.Where(dir => !dir.Name.StartsWith("raw", StringComparison.InvariantCultureIgnoreCase))
