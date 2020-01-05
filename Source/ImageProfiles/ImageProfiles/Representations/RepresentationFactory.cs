@@ -4,7 +4,7 @@ using ImageProfiles.Representations.Impl;
 
 namespace ImageProfiles.Representations
 {
-	class RepresentationFactory
+	public class RepresentationFactory
 	{
 		public enum RepresentationMode
 		{

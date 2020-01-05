@@ -7,7 +7,7 @@ using ImageProfiles.Representations;
 
 namespace ImageProfiles
 {
-	internal class Program
+	public class Program
 	{
 		private static void Main(string[] args)
 		{
@@ -19,7 +19,8 @@ namespace ImageProfiles
 			{
 				var root = new DirectoryInfo(@"D:\Bao\Pictures\Photography\Travel");
 				var mode = RepresentationFactory.RepresentationMode.Database;
-				ProcessAll(root, mode);
+				var representation = RepresentationFactory.GetRepresentation(mode);
+				ProcessAll(root, representation);
 			}
 			catch (Exception e)
 			{
@@ -37,11 +38,10 @@ namespace ImageProfiles
 			}
 		}
 
-		public static void ProcessAll(DirectoryInfo root, RepresentationFactory.RepresentationMode mode)
+		private static void ProcessAll(DirectoryInfo root, AbstractRepresentation representation)
 		{
 			var directories = GetOriginalDirectories(root);
 			var maxLength = directories.Count.ToString().Length;
-			var representation = RepresentationFactory.GetRepresentation(mode);
 			var directoryCount = 0;
 			var size = directories.Count;
 
@@ -49,12 +49,7 @@ namespace ImageProfiles
 			{
 				Console.WriteLine($"[{directoryCount.ToString($"D{maxLength}")} / {size.ToString($"D{maxLength}")}]: {directory.FullName}");
 			
-				var images = GetImageMetadataInDirectory(directory);
-
-				foreach (var image in images)
-				{
-					representation.Save(image);
-				}
+				ProcessDirectory(directory, representation);
 
 				directoryCount++;
 			}
@@ -68,6 +63,16 @@ namespace ImageProfiles
 				.Where(dir => dir.GetFiles().Any(file => !file.Name.Contains("Map")))
 				.ToList();
 			return directories;
+		}
+
+		public static void ProcessDirectory(DirectoryInfo directory, AbstractRepresentation representation)
+		{
+			var images = GetImageMetadataInDirectory(directory);
+
+			foreach (var image in images)
+			{
+				representation.Save(image);
+			}
 		}
 
 		private static List<ImageMetadata> GetImageMetadataInDirectory(DirectoryInfo directory)
