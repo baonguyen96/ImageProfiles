@@ -4,7 +4,7 @@ using ImageProfiles.Representations.Impl;
 
 namespace ImageProfiles.Representations
 {
-	class RepresentationFactory
+	public class RepresentationFactory
 	{
 		public enum RepresentationMode
 		{
@@ -24,7 +24,7 @@ namespace ImageProfiles.Representations
 					break;
 				case RepresentationMode.FlatFile:
 					Directory.CreateDirectory("./ImageReports");
-					var fileName = $"./ImageReports/ImageReport_{DateTime.Now.ToString("yyyyMMddhhmmss")}.csv";
+					var fileName = $"./ImageReports/ImageReport_{DateTime.Now:yyyyMMddhhmmss}.csv";
 					representation = new ImageMetadataFlatFileRepresentation(fileName);
 					break;
 				case RepresentationMode.Console:

@@ -2,13 +2,12 @@
 
 namespace ImageProfiles.Representations
 {
-	internal abstract class AbstractRepresentation
+	public abstract class AbstractRepresentation
 	{
-		protected bool IsInitialLoad;
+		protected static bool IsInitialLoad = true;
 
 		protected AbstractRepresentation()
 		{
-			IsInitialLoad = true;
 		}
 
 		public abstract void Save(ImageMetadata imageMetadata);

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Threading.Tasks;
 using ImageProfiles.Profiles;
 using ImageProfiles.Representations;
 
 namespace ImageProfiles
 {
-	internal class Program
+	public class Program
 	{
 		private static void Main(string[] args)
 		{
@@ -20,7 +20,8 @@ namespace ImageProfiles
 			{
 				var root = new DirectoryInfo(@"D:\Bao\Pictures\Photography\Travel");
 				var mode = RepresentationFactory.RepresentationMode.Database;
-				Process(root, mode);
+				var representation = RepresentationFactory.GetRepresentation(mode);
+				ProcessAll(root, representation);
 			}
 			catch (Exception e)
 			{
@@ -38,30 +39,29 @@ namespace ImageProfiles
 			}
 		}
 
-		public static void Process(DirectoryInfo root, RepresentationFactory.RepresentationMode mode)
+		private static void ProcessAll(DirectoryInfo root, AbstractRepresentation representation)
 		{
 			var directories = GetOriginalDirectories(root);
 			var maxLength = directories.Count.ToString().Length;
-			var representation = RepresentationFactory.GetRepresentation(mode);
-			var directoryCount = 0;
+			var directoryCount = 1;
 			var size = directories.Count;
+			var tasks = new List<Task>();
 
 			foreach (var directory in directories)
 			{
 				Console.WriteLine($"[{directoryCount.ToString($"D{maxLength}")} / {size.ToString($"D{maxLength}")}]: {directory.FullName}");
-			
-				var images = GetImageMetadataInDirectory(directory);
 
-				foreach (var image in images)
-				{
-					representation.Save(image);
-				}
+				var task = new Task(() => ProcessDirectory(directory, representation));
+				tasks.Add(task);
+				task.Start();
 
 				directoryCount++;
 			}
+
+			Task.WaitAll(tasks.ToArray());
 		}
 
-		private static List<DirectoryInfo> GetOriginalDirectories(DirectoryInfo root)
+		public static List<DirectoryInfo> GetOriginalDirectories(DirectoryInfo root)
 		{
 			var directories = root.GetDirectories("*", SearchOption.AllDirectories)
 				.Where(dir => !dir.Name.StartsWith("raw", StringComparison.InvariantCultureIgnoreCase))
@@ -69,6 +69,16 @@ namespace ImageProfiles
 				.Where(dir => dir.GetFiles().Any(file => !file.Name.Contains("Map")))
 				.ToList();
 			return directories;
+		}
+
+		public static void ProcessDirectory(DirectoryInfo directory, AbstractRepresentation representation)
+		{
+			var images = GetImageMetadataInDirectory(directory);
+
+			foreach (var image in images)
+			{
+				representation.Save(image);
+			}
 		}
 
 		private static List<ImageMetadata> GetImageMetadataInDirectory(DirectoryInfo directory)
