@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using ImageProfiles.Profiles;
 using ImageProfiles.Representations;
 
@@ -42,17 +43,22 @@ namespace ImageProfiles
 		{
 			var directories = GetOriginalDirectories(root);
 			var maxLength = directories.Count.ToString().Length;
-			var directoryCount = 0;
+			var directoryCount = 1;
 			var size = directories.Count;
+			var tasks = new List<Task>();
 
 			foreach (var directory in directories)
 			{
 				Console.WriteLine($"[{directoryCount.ToString($"D{maxLength}")} / {size.ToString($"D{maxLength}")}]: {directory.FullName}");
-			
-				ProcessDirectory(directory, representation);
+
+				var task = new Task(() => ProcessDirectory(directory, representation));
+				tasks.Add(task);
+				task.Start();
 
 				directoryCount++;
 			}
+
+			Task.WaitAll(tasks.ToArray());
 		}
 
 		public static List<DirectoryInfo> GetOriginalDirectories(DirectoryInfo root)

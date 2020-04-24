@@ -8,10 +8,6 @@ namespace ImageProfiles.Representations
 
 		protected AbstractRepresentation()
 		{
-			if (IsInitialLoad)
-			{
-				IsInitialLoad = false;
-			}
 		}
 
 		public abstract void Save(ImageMetadata imageMetadata);

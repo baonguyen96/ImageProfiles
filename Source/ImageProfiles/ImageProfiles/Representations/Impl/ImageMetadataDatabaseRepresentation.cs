@@ -71,11 +71,18 @@ namespace ImageProfiles.Representations.Impl
 			{
 				query = GetResetQuery();
 				IsInitialLoad = false;
+
+				using (var connection = new SqlConnection(_connectionString))
+				{
+					connection.Open();
+					using (var sqlCommand = new SqlCommand(query, connection))
+					{
+						sqlCommand.ExecuteNonQuery();
+					}
+				}
 			}
-			else
-			{
-				query = GetInsertQuery(image);
-			}
+
+			query = GetInsertQuery(image);
 
 			using (var connection = new SqlConnection(_connectionString))
 			{

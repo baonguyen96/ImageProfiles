@@ -39,6 +39,7 @@ SELECT
 FROM [dbo].[ImageMetadata] WITH(NOLOCK)
 WHERE COALESCE(NULLIF([LensModel], ''), '----') <> '----'
 	OR [Path] NOT LIKE '%Test%'
+	OR TRIM(COALESCE([LensModel], '')) <> ''
 GROUP BY [LensModel]
 ORDER BY [TotalChosen] DESC
 
