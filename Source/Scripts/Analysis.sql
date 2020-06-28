@@ -9,6 +9,10 @@ TRUNCATE TABLE [dbo].[ImageMetaData]
 -- View
 ------------------------------------
 
+SELECT COUNT(1)
+FROM [dbo].[ImageMetaData] WITH(NOLOCK)
+
+
 SELECT * 
 FROM [dbo].[ImageMetaData] WITH(NOLOCK)
 WHERE [LensModel] = 'Rokinon 12mm f/2.0 NSC CS'
@@ -32,15 +36,15 @@ ORDER BY [TotalPictureTaken] DESC
 ------------------------------------
 
 SELECT 
-	[LensModel], 
+	CASE WHEN [LensModel] IN ('30mm F1.4 DC DN | Contemporary 016', 'E 30mm F1.4') THEN '30mm F1.4 DC DN | Contemporary 016' ELSE [LensModel] END AS [LensModel], 
 	COUNT(1) AS [Total],
 	SUM(CAST([IsChosen] AS INT)) AS [TotalChosen], 
-	SUM(CAST([IsChosen] AS FLOAT)) / CAST(COUNT(1) AS FLOAT) AS [ChosenPercentage]
+	ROUND(SUM(CAST([IsChosen] AS FLOAT)) / CAST(COUNT(1) AS FLOAT) * 100, 2) AS [ChosenPercentage]
 FROM [dbo].[ImageMetadata] WITH(NOLOCK)
 WHERE COALESCE(NULLIF([LensModel], ''), '----') <> '----'
 	OR [Path] NOT LIKE '%Test%'
 	OR TRIM(COALESCE([LensModel], '')) <> ''
-GROUP BY [LensModel]
+GROUP BY CASE WHEN [LensModel] IN ('30mm F1.4 DC DN | Contemporary 016', 'E 30mm F1.4') THEN '30mm F1.4 DC DN | Contemporary 016' ELSE [LensModel] END
 ORDER BY [TotalChosen] DESC
 
 
@@ -65,7 +69,7 @@ SELECT
 	[FocalLength] * 1.5 AS [35EquivalentFocalLength],
 	COUNT(1) AS [Total], 
 	SUM(CAST([IsChosen] AS INT)) AS [TotalChosen], 
-	SUM(CAST([IsChosen] AS FLOAT)) / CAST(COUNT(1) AS FLOAT) AS [ChosenPercentage]
+	ROUND(SUM(CAST([IsChosen] AS FLOAT)) / CAST(COUNT(1) AS FLOAT) * 100, 2) AS [ChosenPercentage]
 FROM [dbo].[ImageMetadata] WITH(NOLOCK)
 WHERE [FocalLength] > 0
 	--AND [LensModel] NOT LIKE '%24%'
@@ -103,7 +107,7 @@ SELECT
 	[Category], 
 	COUNT(1) AS [Total], 
 	SUM([IsChosen]) AS [TotalChosen], 
-	SUM([IsChosen]) / CAST(COUNT(1) AS FLOAT) AS [ChosenPercentage]
+	ROUND(SUM([IsChosen]) / CAST(COUNT(1) AS FLOAT) * 100, 2) AS [ChosenPercentage]
 FROM cte
 GROUP BY [Category]
 ORDER BY [ChosenPercentage] DESC

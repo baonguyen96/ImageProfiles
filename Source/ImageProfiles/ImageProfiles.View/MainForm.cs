@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ImageProfiles.View
@@ -16,9 +16,9 @@ namespace ImageProfiles.View
 			HandleOnLoad();
 		}
 		
-		private void ExecuteButton_Click(object sender, EventArgs e)
+		private async void ExecuteButton_Click(object sender, EventArgs e)
 		{
-			Execute(sender, e);
+			await Execute(sender, e);
 		}
 
 		private void RootDirectoryInput_Click(object sender, EventArgs e)

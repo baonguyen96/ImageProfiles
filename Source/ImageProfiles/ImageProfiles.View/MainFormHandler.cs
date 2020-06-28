@@ -74,14 +74,13 @@ namespace ImageProfiles.View
 
 					foreach (var directory in directories)
 					{
-						OutputTextbox.Text += $"{directory.FullName}\r\n";
+						OutputTextbox.AppendText($"{directory.FullName}\r\n");
 						OutputTextbox.Refresh();
 
 						ImageProfiles.Program.ProcessDirectory(directory, representation);
 
 						step++;
-						ProgressCounter.Text =
-							$"[{step.ToString($"D{maxLength}")} / {size.ToString($"D{maxLength}")}]";
+						ProgressCounter.Text = $"[{step.ToString($"D{maxLength}")} / {size.ToString($"D{maxLength}")}]";
 						ProgressCounter.Refresh();
 						ProgressBar.Increment(1);
 					}
@@ -95,9 +94,8 @@ namespace ImageProfiles.View
 					var end = DateTime.Now;
 					var duration = end - start;
 
-					OutputTextbox.Text += $"\r\nEnd:      {end}\r\n";
-					OutputTextbox.Text +=
-						$"Run time: {duration.Hours:D2}:{duration.Minutes:D2}:{duration.Seconds:D2}";
+					OutputTextbox.AppendText($"\r\nEnd:      {end}\r\n");
+					OutputTextbox.AppendText($"Run time: {duration.Hours:D2}:{duration.Minutes:D2}:{duration.Seconds:D2}");
 				}
 			});
 		}

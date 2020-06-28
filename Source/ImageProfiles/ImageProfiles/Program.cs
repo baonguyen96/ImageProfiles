@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,8 +26,7 @@ namespace ImageProfiles
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e.Message);
-				Console.WriteLine(e.StackTrace);
+				Console.WriteLine(e);
 			}
 			finally
 			{
@@ -81,6 +81,7 @@ namespace ImageProfiles
 			}
 		}
 
+		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
 		private static List<ImageMetadata> GetImageMetadataInDirectory(DirectoryInfo directory)
 		{
 			var editedDirectory = directory.GetDirectories("*Edited*").FirstOrDefault();
@@ -105,9 +106,8 @@ namespace ImageProfiles
 
 				foreach (var image in editedImages)
 				{
-					var im = images.FirstOrDefault(i =>
-						// ReSharper disable once PossibleNullReferenceException
-						Path.GetFileNameWithoutExtension(i.Name).Equals(Path.GetFileNameWithoutExtension(image.Name)));
+					var im = images.FirstOrDefault(i => Path.GetFileNameWithoutExtension(i.Name)
+						.StartsWith(Path.GetFileNameWithoutExtension(image.Name))); 
 
 					if (im != null)
 					{
