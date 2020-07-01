@@ -2,7 +2,8 @@
 ------------------------------------
 -- Reset
 ------------------------------------
-TRUNCATE TABLE [dbo].[ImageMetaData]
+
+-- TRUNCATE TABLE [dbo].[ImageMetaData]
 
 
 ------------------------------------
@@ -15,8 +16,8 @@ FROM [dbo].[ImageMetaData] WITH(NOLOCK)
 
 SELECT * 
 FROM [dbo].[ImageMetaData] WITH(NOLOCK)
-WHERE [LensModel] = 'Rokinon 12mm f/2.0 NSC CS'
---WHERE CONCAT([CameraMake], ' - ', [CameraModel]) = ' - '
+--WHERE [LensModel] = '50mm'
+WHERE CONCAT([CameraModel], ' - ', [LensModel]) = ' - E 18-55mm F3.5-5.6 OSS'
 ORDER BY [DateTaken] DESC
 
 
@@ -24,11 +25,14 @@ ORDER BY [DateTaken] DESC
 -- Most used camera
 ------------------------------------
 
-SELECT CONCAT([CameraMake], ' - ', [CameraModel]) AS [Camera], COUNT(1) AS [TotalPictureTaken]
+SELECT CONCAT([CameraMake], ' - ', [CameraModel]) AS [Camera], 
+	COUNT(1) AS [Total],
+	SUM(CAST([IsChosen] AS INT)) AS [TotalChosen], 
+	ROUND(SUM(CAST([IsChosen] AS FLOAT)) / CAST(COUNT(1) AS FLOAT) * 100, 2) AS [ChosenPercentage]
 FROM [dbo].[ImageMetaData] WITH(NOLOCK)
---WHERE COALESCE([CameraMake], '') <> ''
+WHERE COALESCE([CameraMake], '') <> ''
 GROUP BY CONCAT([CameraMake], ' - ', [CameraModel])
-ORDER BY [TotalPictureTaken] DESC
+ORDER BY [Total] DESC
 
 
 ------------------------------------
@@ -41,10 +45,28 @@ SELECT
 	SUM(CAST([IsChosen] AS INT)) AS [TotalChosen], 
 	ROUND(SUM(CAST([IsChosen] AS FLOAT)) / CAST(COUNT(1) AS FLOAT) * 100, 2) AS [ChosenPercentage]
 FROM [dbo].[ImageMetadata] WITH(NOLOCK)
-WHERE COALESCE(NULLIF([LensModel], ''), '----') <> '----'
-	OR [Path] NOT LIKE '%Test%'
-	OR TRIM(COALESCE([LensModel], '')) <> ''
+WHERE NULLIF(REPLACE([LensModel], '-', ''), '') IS NOT NULL
+	AND [Path] NOT LIKE '%Test%'
+	--OR TRIM(COALESCE([LensModel], '')) <> ''
 GROUP BY CASE WHEN [LensModel] IN ('30mm F1.4 DC DN | Contemporary 016', 'E 30mm F1.4') THEN '30mm F1.4 DC DN | Contemporary 016' ELSE [LensModel] END
+ORDER BY [TotalChosen] DESC
+
+
+
+------------------------------------
+-- Most used combo
+------------------------------------
+
+SELECT 
+	CONCAT([CameraModel], ' - ', [LensModel]) AS [Combo],
+	COUNT(1) AS [Total],
+	SUM(CAST([IsChosen] AS INT)) AS [TotalChosen], 
+	ROUND(SUM(CAST([IsChosen] AS FLOAT)) / CAST(COUNT(1) AS FLOAT) * 100, 2) AS [ChosenPercentage]
+FROM [dbo].[ImageMetadata] WITH(NOLOCK)
+WHERE NULLIF(REPLACE([LensModel], '-', ''), '') IS NOT NULL
+	AND [Path] NOT LIKE '%Test%'
+	--OR TRIM(COALESCE([LensModel], '')) <> ''
+GROUP BY CONCAT([CameraModel], ' - ', [LensModel])
 ORDER BY [TotalChosen] DESC
 
 
@@ -75,7 +97,7 @@ WHERE [FocalLength] > 0
 	--AND [LensModel] NOT LIKE '%24%'
 	--AND [LensModel] NOT LIKE '%30%'
 GROUP BY [FocalLength]
-HAVING SUM(CAST([IsChosen] AS INT)) > 
+HAVING SUM(CAST([IsChosen] AS INT)) >= 
 (
 	SELECT AVG(CAST([IsChosen] AS FLOAT)) * 100
 	FROM [dbo].[ImageMetadata] WITH(NOLOCK)
@@ -143,7 +165,7 @@ FROM [dbo].[ImageMetadata] WIHT(NOLOCK)
 WHERE [Name] LIKE '%.JPG'
 
 
--- Find examples of each type
+-- Find examples of each file type
 ; WITH #FileExtensions AS 
 (
 	SELECT 

@@ -84,7 +84,8 @@ namespace ImageProfiles
 		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
 		private static List<ImageMetadata> GetImageMetadataInDirectory(DirectoryInfo directory)
 		{
-			var editedDirectory = directory.GetDirectories("*Edited*").FirstOrDefault();
+			var editedDirectory = directory.GetDirectories("*Edited*").FirstOrDefault()
+			                      ?? directory.Parent.GetDirectories("*Edited*").FirstOrDefault();
 			var allImages = directory.GetFiles();
 			var images = allImages.Select(image =>
 			{
@@ -107,7 +108,7 @@ namespace ImageProfiles
 				foreach (var image in editedImages)
 				{
 					var im = images.FirstOrDefault(i => Path.GetFileNameWithoutExtension(i.Name)
-						.StartsWith(Path.GetFileNameWithoutExtension(image.Name))); 
+						.StartsWith(Path.GetFileNameWithoutExtension(image.Name)));
 
 					if (im != null)
 					{

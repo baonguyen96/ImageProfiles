@@ -43,7 +43,7 @@ namespace ImageProfiles.Profiles.Impl
 					}
 				}
 
-				imageMetaData = UpdateImageMetadataForManualLens(imageMetaData);
+				imageMetaData = UpdateImageMetadataForUnrecognizedLens(imageMetaData);
 			}
 			catch (Exception e)
 			{

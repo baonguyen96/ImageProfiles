@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using MetadataExtractor;
 
@@ -29,7 +30,11 @@ namespace ImageProfiles.Profiles.Impl
 						{
 							if (tag.Name.Equals("Create Date"))
 							{
-								if (tag.Description == null) continue;
+								if (tag.Description == null)
+								{
+									continue;
+								}
+
 								var date = tag.Description.Split('T')[0];
 								var time = tag.Description.Split('T')[1];
 								imageMetaData.DateTaken = DateTime.Parse($"{date.Replace('-', '/')} {time}");
@@ -61,7 +66,7 @@ namespace ImageProfiles.Profiles.Impl
 					}
 				}
 
-				imageMetaData = UpdateImageMetadataForManualLens(imageMetaData);
+				imageMetaData = UpdateImageMetadataForUnrecognizedLens(imageMetaData);
 			}
 			catch (Exception e)
 			{

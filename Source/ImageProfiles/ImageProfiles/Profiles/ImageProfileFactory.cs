@@ -13,10 +13,11 @@ namespace ImageProfiles.Profiles
 
 			switch (extension)
 			{
-				case ".jpg":
+//				case ".jpg":
 				case ".jpeg":
 					profile = new JpgProfile(file);
 					break;
+				case ".jpg":
 				case ".JPG":
 				case ".JPEG":
 					profile = new JpegProfile(file);
