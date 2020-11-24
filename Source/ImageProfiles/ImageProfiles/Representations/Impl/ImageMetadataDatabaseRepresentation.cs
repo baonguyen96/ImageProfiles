@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using ImageProfiles.Profiles;
 
@@ -7,10 +8,12 @@ namespace ImageProfiles.Representations.Impl
 	internal class ImageMetadataDatabaseRepresentation : AbstractRepresentation
 	{
 		private readonly string _connectionString;
+		private readonly List<string> _loadedDirs;
 
 		public ImageMetadataDatabaseRepresentation(string server, string database) : base()
 		{
 			_connectionString = $"Data Source={server};Initial Catalog={database};Integrated Security=true;";
+			_loadedDirs = new List<string>();
 		}
 		
 		private static string GetInsertQuery(ImageMetadata image)
@@ -58,20 +61,19 @@ namespace ImageProfiles.Representations.Impl
 				);";
 		}
 
-		private static string GetResetQuery()
+		private static string GetResetQuery(string path)
 		{
-			return "TRUNCATE TABLE [dbo].[ImageMetadata];";
+			return $@"DELETE FROM [dbo].[ImageMetadata] WHERE [Path] = '{path}';";
 		}
 
 		public override void Save(ImageMetadata image)
 		{
 			string query;
 
-			if (IsInitialLoad)
+			if (!_loadedDirs.Contains(image.Path))
 			{
-				query = GetResetQuery();
-				IsInitialLoad = false;
-
+				query = GetResetQuery(image.Path);
+				
 				using (var connection = new SqlConnection(_connectionString))
 				{
 					connection.Open();
@@ -80,6 +82,8 @@ namespace ImageProfiles.Representations.Impl
 						sqlCommand.ExecuteNonQuery();
 					}
 				}
+
+				_loadedDirs.Add(image.Path);
 			}
 
 			query = GetInsertQuery(image);

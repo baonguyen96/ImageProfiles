@@ -7,6 +7,8 @@ namespace ImageProfiles.Representations.Impl
 	{
 		private readonly string _fileName;
 
+		private static bool IsInitialLoad = true;
+
 		public ImageMetadataFlatFileRepresentation(string fileName) : base()
 		{
 			_fileName = fileName;

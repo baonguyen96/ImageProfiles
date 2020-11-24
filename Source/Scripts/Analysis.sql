@@ -17,7 +17,7 @@ FROM [dbo].[ImageMetaData] WITH(NOLOCK)
 SELECT * 
 FROM [dbo].[ImageMetaData] WITH(NOLOCK)
 --WHERE [LensModel] = '50mm'
-WHERE CONCAT([CameraModel], ' - ', [LensModel]) = ' - E 18-55mm F3.5-5.6 OSS'
+--WHERE CONCAT([CameraModel], ' - ', [LensModel]) = ' - E 18-55mm F3.5-5.6 OSS'
 ORDER BY [DateTaken] DESC
 
 
@@ -49,7 +49,7 @@ WHERE NULLIF(REPLACE([LensModel], '-', ''), '') IS NOT NULL
 	AND [Path] NOT LIKE '%Test%'
 	--OR TRIM(COALESCE([LensModel], '')) <> ''
 GROUP BY CASE WHEN [LensModel] IN ('30mm F1.4 DC DN | Contemporary 016', 'E 30mm F1.4') THEN '30mm F1.4 DC DN | Contemporary 016' ELSE [LensModel] END
-ORDER BY [TotalChosen] DESC
+ORDER BY [Total] DESC
 
 
 
@@ -67,7 +67,7 @@ WHERE NULLIF(REPLACE([LensModel], '-', ''), '') IS NOT NULL
 	AND [Path] NOT LIKE '%Test%'
 	--OR TRIM(COALESCE([LensModel], '')) <> ''
 GROUP BY CONCAT([CameraModel], ' - ', [LensModel])
-ORDER BY [TotalChosen] DESC
+ORDER BY [Total] DESC
 
 
 
@@ -116,9 +116,9 @@ ORDER BY [TotalChosen] DESC
 (
 	SELECT
 		CASE
-			WHEN [FocalLength] <= 18.0 THEN 'Ultrawide [0mm, 18mm]'
-			WHEN [FocalLength] <= 28.0 THEN 'Wide [19mm, 28mm]'
-			WHEN [FocalLength] <= 50.0 THEN 'Standard [29mm, 50mm]'
+			WHEN [FocalLength] * 1.5 <= 18.0 THEN 'Ultrawide [0mm, 18mm]'
+			WHEN [FocalLength] * 1.5 <= 28.0 THEN 'Wide [19mm, 28mm]'
+			WHEN [FocalLength] * 1.5 <= 50.0 THEN 'Standard [29mm, 50mm]'
 			ELSE 'Tele [51mm, infinity)' 
 		END AS Category,
 		CAST([IsChosen] AS FLOAT) AS [IsChosen]
@@ -132,12 +132,12 @@ SELECT
 	ROUND(SUM([IsChosen]) / CAST(COUNT(1) AS FLOAT) * 100, 2) AS [ChosenPercentage]
 FROM cte
 GROUP BY [Category]
-ORDER BY [ChosenPercentage] DESC
+ORDER BY [TotalChosen] DESC
 
 
 
 ------------------------------------
--- Date range of most chosen pics
+-- Keepers rate
 ------------------------------------
 
 SELECT EOMONTH([DateTaken]) AS [MonthTaken], COUNT(1) AS [Total]
@@ -146,6 +146,19 @@ WHERE [IsChosen] = 1
 	AND [FocalLength] BETWEEN 19 AND 28
 GROUP BY EOMONTH([DateTaken]) 
 ORDER BY [Total] DESC
+
+
+
+
+SELECT 
+	DENSE_RANK() OVER(ORDER BY EOMONTH([DateTaken])) AS [Id],
+	EOMONTH([DateTaken]) AS [MonthTaken],
+	COUNT(1) AS [Total],
+	SUM(CAST([IsChosen] AS INT)) AS [TotalChosen],
+	ROUND(SUM(CAST([IsChosen] AS FLOAT)) / CAST(COUNT(1) AS FLOAT) * 100, 2) AS [KeeperRate]
+FROM [dbo].[ImageMetadata] WITH(NOLOCK)
+GROUP BY EOMONTH([DateTaken])
+ORDER BY EOMONTH([DateTaken])
 
 
 

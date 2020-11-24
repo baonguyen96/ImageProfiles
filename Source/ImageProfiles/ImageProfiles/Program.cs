@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ImageProfiles.Profiles;
 using ImageProfiles.Representations;
+using ImageProfiles.Util;
 
 namespace ImageProfiles
 {
@@ -41,7 +42,8 @@ namespace ImageProfiles
 
 		private static void ProcessAll(DirectoryInfo root, AbstractRepresentation representation)
 		{
-			var directories = GetOriginalDirectories(root);
+			var lastRunDate = RunTimeUtil.GetLastRunTime();
+			var directories = GetOriginalDirectories(root, lastRunDate);
 			var maxLength = directories.Count.ToString().Length;
 			var directoryCount = 1;
 			var size = directories.Count;
@@ -59,16 +61,22 @@ namespace ImageProfiles
 			}
 
 			Task.WaitAll(tasks.ToArray());
+			RunTimeUtil.StoreRunTime(DateTime.Now);
 		}
 
-		public static List<DirectoryInfo> GetOriginalDirectories(DirectoryInfo root)
+		public static List<DirectoryInfo> GetOriginalDirectories(DirectoryInfo root, DateTime? lastRun)
 		{
 			var directories = root.GetDirectories("*", SearchOption.AllDirectories)
 				.Where(dir => !dir.Name.StartsWith("raw", StringComparison.InvariantCultureIgnoreCase))
 				.Where(dir => !dir.Name.StartsWith("edit", StringComparison.InvariantCultureIgnoreCase))
-				.Where(dir => dir.GetFiles().Any(file => !file.Name.Contains("Map")))
-				.ToList();
-			return directories;
+				.Where(dir => dir.GetFiles().Any(file => !file.Name.Contains("Map")));
+			
+			if (lastRun != null)
+			{
+				directories = directories.Where(dir => dir.LastWriteTime > lastRun.Value);
+			}
+
+			return directories.ToList();
 		}
 
 		public static void ProcessDirectory(DirectoryInfo directory, AbstractRepresentation representation)
@@ -97,9 +105,7 @@ namespace ImageProfiles
 				{
 					return null;
 				}
-			}).ToList();
-
-			images = images.Where(im => im != null).ToList();
+			}).Where(im => im != null).ToList();
 
 			if (editedDirectory != null && editedDirectory.Exists)
 			{
@@ -107,7 +113,8 @@ namespace ImageProfiles
 
 				foreach (var image in editedImages)
 				{
-					var im = images.FirstOrDefault(i => Path.GetFileNameWithoutExtension(i.Name)
+					var im = images
+						.FirstOrDefault(i => Path.GetFileNameWithoutExtension(i.Name)
 						.StartsWith(Path.GetFileNameWithoutExtension(image.Name)));
 
 					if (im != null)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ImageProfiles.Representations;
+using ImageProfiles.Util;
 
 // ReSharper disable LocalizableElement
 
@@ -55,8 +56,9 @@ namespace ImageProfiles.View
 			{
 				try
 				{
+					var lastRunDate = RunTimeUtil.GetLastRunTime();
 					var directoryInfo = new DirectoryInfo(RootDirectoryInput.Text);
-					var directories = ImageProfiles.Program.GetOriginalDirectories(directoryInfo);
+					var directories = ImageProfiles.Program.GetOriginalDirectories(directoryInfo, lastRunDate);
 					var modeAsString = OutputModes.Controls.OfType<RadioButton>()
 						.First(button => button.Checked)
 						.Text.Replace(" ", "");
@@ -84,6 +86,8 @@ namespace ImageProfiles.View
 						ProgressCounter.Refresh();
 						ProgressBar.Increment(1);
 					}
+
+					RunTimeUtil.StoreRunTime(DateTime.Now);
 				}
 				catch (Exception exception)
 				{
