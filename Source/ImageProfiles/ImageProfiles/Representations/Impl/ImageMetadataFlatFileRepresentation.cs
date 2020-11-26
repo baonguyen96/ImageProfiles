@@ -54,17 +54,15 @@ namespace ImageProfiles.Representations.Impl
 
 		public override void Save(ImageMetadata image)
 		{
-			string line;
+			string line = "";
 
 			if (IsInitialLoad)
 			{
-				line = GetHeader();
+				line = $"{GetHeader()}\n";
 				IsInitialLoad = false;
 			}
-			else
-			{
-				line = GetString(image);
-			}
+
+			line += GetString(image);
 
 			using (var sw = new StreamWriter(_fileName, true))
 			{
