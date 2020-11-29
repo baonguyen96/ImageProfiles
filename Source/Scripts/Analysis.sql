@@ -6,6 +6,12 @@
 -- TRUNCATE TABLE [dbo].[ImageMetaData]
 
 
+UPDATE mt
+SET [LensModel] = CASE WHEN [LensModel] IN ('30mm F1.4 DC DN | Contemporary 016', 'E 30mm F1.4') THEN '30mm F1.4 DC DN | Contemporary 016' ELSE [LensModel] END
+FROM [dbo].[ImageMetaData] mt;
+
+
+
 ------------------------------------
 -- View
 ------------------------------------
@@ -18,7 +24,17 @@ SELECT *
 FROM [dbo].[ImageMetaData] WITH(NOLOCK)
 --WHERE [LensModel] = '50mm'
 --WHERE CONCAT([CameraModel], ' - ', [LensModel]) = ' - E 18-55mm F3.5-5.6 OSS'
-ORDER BY [DateTaken] DESC
+ORDER BY [DateTaken] DESC;
+
+
+SELECT DISTINCT [LensModel]
+FROM [dbo].[ImageMetaData] WITH(NOLOCK)
+ORDER BY [LensModel];
+
+
+SELECT DISTINCT [CameraModel]
+FROM [dbo].[ImageMetaData] WITH(NOLOCK)
+ORDER BY [CameraModel];
 
 
 ------------------------------------
@@ -40,7 +56,7 @@ ORDER BY [Total] DESC
 ------------------------------------
 
 SELECT 
-	CASE WHEN [LensModel] IN ('30mm F1.4 DC DN | Contemporary 016', 'E 30mm F1.4') THEN '30mm F1.4 DC DN | Contemporary 016' ELSE [LensModel] END AS [LensModel], 
+	[LensModel], 
 	COUNT(1) AS [Total],
 	SUM(CAST([IsChosen] AS INT)) AS [TotalChosen], 
 	ROUND(SUM(CAST([IsChosen] AS FLOAT)) / CAST(COUNT(1) AS FLOAT) * 100, 2) AS [ChosenPercentage]
@@ -48,7 +64,7 @@ FROM [dbo].[ImageMetadata] WITH(NOLOCK)
 WHERE NULLIF(REPLACE([LensModel], '-', ''), '') IS NOT NULL
 	AND [Path] NOT LIKE '%Test%'
 	--OR TRIM(COALESCE([LensModel], '')) <> ''
-GROUP BY CASE WHEN [LensModel] IN ('30mm F1.4 DC DN | Contemporary 016', 'E 30mm F1.4') THEN '30mm F1.4 DC DN | Contemporary 016' ELSE [LensModel] END
+GROUP BY [LensModel]
 ORDER BY [Total] DESC
 
 
