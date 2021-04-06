@@ -19,5 +19,14 @@ namespace ImageProfiles.Profiles
 		public int? Iso { get; set; }
 		public string ExposureBiasValue { get; set; }
 		public bool IsChosen { get; set; }
+
+		public bool IsPanorama
+		{
+			get
+			{
+				var ratio = WidthInPixel / HeightInPixel;
+				return (WidthInPixel > 10000 || Name.ToLowerInvariant().Contains("pano") || ratio >= 3);
+			}
+		}
 	}
 }

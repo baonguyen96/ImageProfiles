@@ -7,8 +7,9 @@
 
 
 UPDATE mt
-SET [LensModel] = CASE WHEN [LensModel] IN ('30mm F1.4 DC DN | Contemporary 016', 'E 30mm F1.4') THEN '30mm F1.4 DC DN | Contemporary 016' ELSE [LensModel] END
-FROM [dbo].[ImageMetaData] mt;
+SET [LensModel] = CASE WHEN [LensModel] = 'E 30mm F1.4' THEN '30mm F1.4 DC DN | Contemporary 016' ELSE [LensModel] END
+FROM [dbo].[ImageMetaData] mt
+WHERE [LensModel] IN ('E 30mm F1.4');
 
 
 

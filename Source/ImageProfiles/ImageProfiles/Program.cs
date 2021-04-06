@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace ImageProfiles
 
 			try
 			{
-				var root = new DirectoryInfo(@"D:\Bao\Pictures\Photography\Travel");
+				var root = new DirectoryInfo(@"D:\Bao\Pictures\Photography\Travel\");
 				var mode = RepresentationFactory.RepresentationMode.Database;
 				var representation = RepresentationFactory.GetRepresentation(mode);
 				ProcessAll(root, representation);
@@ -71,6 +72,14 @@ namespace ImageProfiles
 				.Where(dir => !dir.Name.StartsWith("edit", StringComparison.InvariantCultureIgnoreCase))
 				.Where(dir => dir.GetFiles().Any(file => !file.Name.Contains("Map")));
 			
+			if (directories == null || directories.Count() == 0)
+			{
+				directories = new List<DirectoryInfo>
+				{
+					root
+				};
+			}
+
 			if (lastRun != null)
 			{
 				directories = directories.Where(dir => dir.LastWriteTime > lastRun.Value);
@@ -94,7 +103,7 @@ namespace ImageProfiles
 		{
 			var editedDirectory = directory.GetDirectories("*Edited*").FirstOrDefault()
 			                      ?? directory.Parent.GetDirectories("*Edited*").FirstOrDefault();
-			var allImages = directory.GetFiles();
+			var allImages = directory.GetFiles().OrderBy(im => im.Name);
 			var images = allImages.Select(image =>
 			{
 				try
@@ -105,23 +114,83 @@ namespace ImageProfiles
 				{
 					return null;
 				}
-			}).Where(im => im != null).ToList();
+			})
+				.Where(im => im != null)
+				.OrderBy(im => im.Name)
+				.ToList();
 
+			
 			if (editedDirectory != null && editedDirectory.Exists)
 			{
 				var editedImages = editedDirectory.GetFiles();
 
-				foreach (var image in editedImages)
+				for (var i = 0; i < images.Count; i++)
 				{
-					var im = images
-						.FirstOrDefault(i => Path.GetFileNameWithoutExtension(i.Name)
-						.StartsWith(Path.GetFileNameWithoutExtension(image.Name)));
+					var currentImage = images[i];
 
-					if (im != null)
+					// find corresponding image in Edited
+					var editedImage = editedImages.FirstOrDefault(im => Path.GetFileNameWithoutExtension(im.Name)
+					.StartsWith(Path.GetFileNameWithoutExtension(currentImage.Name)));
+
+					if (editedImage != null)
 					{
-						im.IsChosen = true;
+						currentImage.IsChosen = true;
+						ImageMetadata editedImageMetadata = null;
+
+						try
+						{
+							editedImageMetadata = ImageProfileFactory.GetProfile(editedImage).GetMetadata();
+						}
+						catch
+						{
+							editedImageMetadata = null;
+						}
+
+						// check pano
+						if (editedImageMetadata != null && editedImageMetadata.IsPanorama)
+						{
+							var currentCounter = FileUtil.GetFileCounter(currentImage.Name);
+							
+							// must have time component to check
+							if (currentImage.DateTaken == null || !currentImage.DateTaken.HasValue)
+							{
+								var j = i + 1;
+
+								for (; j < images.Count; j++)
+								{
+									var nextImage = images[j];
+									var nextCounter = FileUtil.GetFileCounter(nextImage.Name);
+									var timeDiff = (nextImage.DateTaken - currentImage.DateTaken).Value.TotalSeconds;
+
+									//Console.WriteLine($"Current: {currentImage.Name} - {currentCounter} - {currentImage.DateTaken}");
+									//Console.WriteLine($"Current: {nextImage.Name} - {nextCounter} - {nextImage.DateTaken}");
+									//Console.WriteLine($"i: {i}, j: {j}, Timediff: {timeDiff}");
+
+									if (nextCounter == currentCounter + (j - i) && timeDiff <= ((j - i) * 10))
+									{
+										nextImage.IsChosen = true;
+									}
+								}
+
+								i = j;
+							}
+						}
 					}
 				}
+
+				//var editedImages = editedDirectory.GetFiles();
+
+				//foreach (var editedImage in editedImages)
+				//{
+				//	var im = images
+				//		.FirstOrDefault(i => Path.GetFileNameWithoutExtension(i.Name)
+				//		.StartsWith(Path.GetFileNameWithoutExtension(editedImage.Name)));
+
+				//	if (im != null)
+				//	{
+				//		im.IsChosen = true;
+				//	}
+				//}
 			}
 
 			return images;

@@ -67,6 +67,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Profiles\Impl\PngProfile.cs" />
     <Compile Include="Representations\RepresentationFactory.cs" />
+    <Compile Include="Util\FileUtil.cs" />
     <Compile Include="Util\RunTimeUtil.cs" />
   </ItemGroup>
   <ItemGroup>
