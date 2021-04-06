@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -151,7 +150,6 @@ namespace ImageProfiles
 						{
 							var currentCounter = FileUtil.GetFileCounter(currentImage.Name);
 							
-							// must have time component to check
 							if (currentImage.DateTaken == null || !currentImage.DateTaken.HasValue)
 							{
 								var j = i + 1;
@@ -161,10 +159,6 @@ namespace ImageProfiles
 									var nextImage = images[j];
 									var nextCounter = FileUtil.GetFileCounter(nextImage.Name);
 									var timeDiff = (nextImage.DateTaken - currentImage.DateTaken).Value.TotalSeconds;
-
-									//Console.WriteLine($"Current: {currentImage.Name} - {currentCounter} - {currentImage.DateTaken}");
-									//Console.WriteLine($"Current: {nextImage.Name} - {nextCounter} - {nextImage.DateTaken}");
-									//Console.WriteLine($"i: {i}, j: {j}, Timediff: {timeDiff}");
 
 									if (nextCounter == currentCounter + (j - i) && timeDiff <= ((j - i) * 10))
 									{
@@ -177,20 +171,6 @@ namespace ImageProfiles
 						}
 					}
 				}
-
-				//var editedImages = editedDirectory.GetFiles();
-
-				//foreach (var editedImage in editedImages)
-				//{
-				//	var im = images
-				//		.FirstOrDefault(i => Path.GetFileNameWithoutExtension(i.Name)
-				//		.StartsWith(Path.GetFileNameWithoutExtension(editedImage.Name)));
-
-				//	if (im != null)
-				//	{
-				//		im.IsChosen = true;
-				//	}
-				//}
 			}
 
 			return images;
